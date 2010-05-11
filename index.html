@@ -1,0 +1,80 @@
+<html>
+	<head>
+		<title>Project Vimes</title>
+		<script type='text/javascript' src='http://code.jquery.com/jquery-1.4.2.min.js'></script>
+		<link rel='stylesheet' href="styles.css" type='text/css' media='screen'>
+	</head>
+	<body>
+		<div class="list-area">
+		<div>
+			<h1>List 1</h1>
+			<ul>
+				<li>Item 1</li>
+				<li>Item 2</li>
+				<li>Item 3</li>
+				<li>Item 4</li>
+				<li>Item 5</li>
+			</ul>
+		</div>
+		</div>
+		<style>
+			.create-item {visibility:hidden;list-style:none}
+			.current-list {background-color:#ffe}
+			.current-list .create-item {visibility:visible}
+
+		</style>
+		<script>
+			function addItem(event) {
+				var item = $('<li>New Item</li>')
+				item.bind({
+					mouseover: highlightListItem,
+					mouseout: unhighlightListItem,
+					click: clickListItem
+				})
+				item.insertBefore(this)
+				item.triggerHandler('click')
+			}
+
+			function highlightListItem(event) {}
+			function unhighlightListItem(event) {}
+			
+			var editItems = []
+
+			function editComplete(item) {
+				item.parent().html(item.attr('value'))
+			}
+
+			function clickListItem(event) {
+
+				if ($(this).hasClass('current-edit-item')) { return }
+				$.each(editItems, function(idx, value) { editComplete(value)})
+				$(this).addClass('current-edit-item')
+				var value = $(this).text()	
+				var input = $("<input type='text' value='" + value + "'>")
+				$(this).html("")
+				input.appendTo($(this))
+				input.focus()
+				editItems[editItems.length] = input
+			}
+
+			$(document).ready(function() {
+				$(".list-area li").each(function(index) {
+					$(this).bind({
+						mouseover: highlightListItem,
+						mouseout: unhighlightListItem,
+						click: clickListItem
+					})
+				})
+				$(".list-area ul").each(function(index) {
+					var add = $('<li class="create-item">Add Item</li>')
+					add.click(addItem)
+					add.appendTo(this)
+					$(this).mouseover(function() {$(this).addClass("current-list")})
+					$(this).mouseout(function() {$(this).removeClass("current-list")})
+				})
+
+
+			})
+		</script>
+	</body>
+</html>
