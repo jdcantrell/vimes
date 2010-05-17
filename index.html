@@ -5,17 +5,31 @@
 	</head>
 	<body>
 		<div class="list-area">
-			<div>
-				<h1>List 1</h1>
+			<div class="list">
+				<h1>Vimes Todo</h1>
 				<ul>
-					<li>Item 1</li>
-					<li>Item 2</li>
-					<li>Item 3</li>
-					<li>Item 4</li>
-					<li>Item 5</li>
+					<li>Click to mark item complete</li>
+					<li>Make add and remove work</li>
+					<li>Make edit grow and shrink appropriately</li>
+					<li>Set List color</li>
+					<li>Drag and drop re order items</li>
+					<li>Create new lists</li>
+					<li>Drag and drop lists into columns (ideally create columns as required)</li>
+					<li>Make things look pretty</li>
+					<li>Save lists to db</li>
+					<li>Let user create pages of lists</li>
 				</ul>
 			</div>
 		</div>
+		<div id="itemToolTray">
+			<img id="editItem" alt="Edit" src="images/pencil.png">
+			<img alt="Add" src="images/add.png">
+			<img alt="Remove" src="images/delete.png">
+		</div>
+		<div id="listToolTray">
+			<img alt="Remove" src="images/delete.png">
+		</div>
+
 		<script type='text/javascript' src='http://code.jquery.com/jquery-1.4.2.min.js'></script>
 		<script type='text/javascript' src='vimes.js'></script>
 	</body>

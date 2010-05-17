@@ -9,7 +9,17 @@ function addItem(event) {
 	item.triggerHandler('click')
 }
 
-function highlightListItem(event) {}
+currentItem = null
+function highlightListItem(event) {
+	var tools = $('#itemToolTray')
+	var pos = $(this).position()
+	var width = $(this).width()
+	pos.left += width
+	pos.position = 'absolute'
+	console.log(pos)
+	tools.css(pos)
+	currentItem = this
+}
 function unhighlightListItem(event) {}
 
 var editItems = []
@@ -19,31 +29,31 @@ function editComplete(item) {
 	item.parent().text(item.attr('value'))
 }
 
-function editItem(event) {
-	if ($(this).hasClass('current-edit-item')) { return }
+function editItem(item) {
+	console.log('edit', item)
+	if ($(item).hasClass('current-edit-item')) { return }
 	$.each(editItems, function(idx, value) { editComplete(value)})
-	$(this).addClass('current-edit-item')
-	var value = $(this).text()	
+	$(item).addClass('current-edit-item')
+	var value = $(item).text()	
 	var input = $("<input type='text' value='" + value + "'>")
-	$(this).html("")
-	input.appendTo($(this))
+	$(item).html("")
+	input.appendTo($(item))
 	input.focus()
 	editItems[editItems.length] = input
 }
 
 $(document).ready(function() {
+	$('#editItem').click(function() {editItem(currentItem)})
 	$(".list-area li").each(function(index) {
 		$(this).bind({
 			mouseover: highlightListItem,
 			mouseout: unhighlightListItem,
-			click: editItem
 		})
 	})
 	$(".list-area h1").each(function(index) {
 		$(this).bind({
 			mouseover: highlightListItem,
 			mouseout: unhighlightListItem,
-			click: editItem
 		})
 	})
 	$(".list-area ul").each(function(index) {
