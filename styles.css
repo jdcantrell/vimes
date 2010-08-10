@@ -26,3 +26,11 @@ input {
 	z-index:10000
 }
 .editing li {}
+.list {
+	margin-left:0;
+	list-style:none
+}
+.column {
+	min-height:20px;
+	background-color:#ffa;
+}

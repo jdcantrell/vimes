@@ -1,36 +1,55 @@
 <html>
 	<head>
 		<title>Project Vimes</title>
+		<link rel='stylesheet' href="reset.css" type='text/css' media='screen'>
+		<link rel='stylesheet' href="text.css" type='text/css' media='screen'>
+		<link rel='stylesheet' href="960.css" type='text/css' media='screen'>
 		<link rel='stylesheet' href="styles.css" type='text/css' media='screen'>
 	</head>
 	<body>
-		<div class="list-area">
-			<div class="list">
-				<h1>Vimes Todo</h1>
-				<ul>
-					<li>Click to mark item complete</li>
-					<li>Make add and remove work</li>
-					<li>Make edit grow and shrink appropriately</li>
-					<li>Set List color</li>
-					<li>Drag and drop re order items</li>
-					<li>Create new lists</li>
-					<li>Drag and drop lists into columns (ideally create columns as required)</li>
-					<li>Make things look pretty</li>
-					<li>Save lists to db</li>
-					<li>Let user create pages of lists</li>
-				</ul>
-			</div>
+		<div class="container_12">
+			<ul class="grid_4 column">
+				<li class="list">
+					<h1>Vimes Todo</h1>
+					<ul id="list"><li>Click to mark item complete</li>
+						<li>Make add and remove work</li>
+						<li>Make edit grow and shrink appropriately</li>
+						<li>Set List color</li>
+						<li>Drag and drop re order items</li>
+						<li>Create new lists</li>
+						<li>Drag and drop lists into columns (ideally create columns as required)</li>
+						<li>Make things look pretty</li>
+						<li>Save lists to db</li>
+						<li>Let user create pages of lists</li>
+					</ul>
+					<a href="#" class="edit-link">Click here to edit or add new item</a>
+				</li>
+			</ul>
+			<ul class="grid_4 column">
+				<li class="list">
+					<h1>Vimes Todo</h1>
+					<ul id="list"><li>Click to mark item complete</li>
+						<li>Make add and remove work</li>
+						<li>Make edit grow and shrink appropriately</li>
+						<li>Set List color</li>
+					</ul>
+					<a href="#" class="edit-link">Click here to edit or add new item</a>
+				</li>
+			</ul>
+			<ul class="grid_4 column">
+				<li class="list">
+					<h1>Vimes Todo</h1>
+					<ul id="list"><li>Click to mark item complete</li>
+						<li>Make add and remove work</li>
+						<li>Make edit grow and shrink appropriately</li>
+						<li>Set List color</li>
+					</ul>
+					<a href="#" class="edit-link">Click here to edit or add new item</a>
+				</li>
+			</ul>
 		</div>
-		<div id="itemToolTray">
-			<img id="editItem" alt="Edit" src="images/pencil.png">
-			<img alt="Add" src="images/add.png">
-			<img alt="Remove" src="images/delete.png">
-		</div>
-		<div id="listToolTray">
-			<img alt="Remove" src="images/delete.png">
-		</div>
-
-		<script type='text/javascript' src='http://code.jquery.com/jquery-1.4.2.min.js'></script>
+		<script type='text/javascript' src='http://ajax.googleapis.com/ajax/libs/jquery/1.4/jquery.min.js'></script>
+		<script type='text/javascript' src='http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.3/jquery-ui.min.js'></script>
 		<script type='text/javascript' src='vimes.js'></script>
 	</body>
 </html>
