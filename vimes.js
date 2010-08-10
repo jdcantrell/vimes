@@ -28,23 +28,33 @@ function completeEdit() {
 	$(this).css('display','none')
 }
 
+function resizeColumns(e, ui) {
+	var minHeight = 0
+	$('.column').each(function (idx, col) {
+		$('.column').css('min-height', 0)
+		var h = $(col).height()
+		console.log(h)
+		minHeight = (h > minHeight) ? h : minHeight
+	})
+	console.log('min-height',minHeight)
+	$('.column').css('minHeight',minHeight)
+}
+
 $(document).ready(function() {
 	$('.edit-link').bind('click', editList)
 	$('#listEditor').bind('keyup', updateList)
 	$('#listEditor').bind('blur', completeEdit)
 	$('.column').sortable({
-		connectWith:'.column',
-		handle:'h1',
-		sort:function(e, ui) {
-			var minHeight = 0
-			$('.column').each(function (idx, col) {
-				$('.column').css('min-height', 0)
-				var h = $(col).height()
-				console.log(h)
-				minHeight = (h > minHeight) ? h : minHeight
-			})
-			console.log('min-height',minHeight)
-			$('.column').css('minHeight',minHeight)
+		connectWith: '.column',
+		handle: 'h1',
+		placeholder: 'placeholder',
+		forcePlaceholderSize: true,
+		forceHelperSize: true,
+		revert: true,
+		sort: resizeColumns,
+		start: function (event, ui) {
+			$(ui.placeholder).height($(ui.item).height())
+
 		}
 	})
 

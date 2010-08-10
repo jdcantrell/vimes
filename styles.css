@@ -31,6 +31,10 @@ input {
 	list-style:none
 }
 .column {
-	min-height:20px;
-	background-color:#ffa;
+	min-height:100px;
+}
+.placeholder {
+	background-color:#eef;
+	margin-left:0;
+	list-style:none;
 }
