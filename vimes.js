@@ -1,49 +1,66 @@
-function updateList(e) {
-	var text = this.value
-	$('#list').html('<li>' + text.replace(/\n/g,"<li>"))
+//Focus code found and based on:
+//http://stackoverflow.com/questions/2871081/jquery-setting-cursor-posistion-in-contenteditable-div
+focusEditable = function(el,collapse) {
+	window.setTimeout(function() {
+			var sel, range
+			if (window.getSelection && document.createRange) {//for standards 
+				range = document.createRange()
+				range.selectNodeContents(el)
+				if (collapse) range.collapse()
+				sel = window.getSelection()
+				sel.removeAllRanges()
+				sel.addRange(range);
+			}
+			else if (document.body.createTextRange) {// for IE
+				range = document.body.createTextRange()
+				range.moveToElementText(el);
+				if (collapse) range.collapse()
+				range.select()
+			}
+	}, 1)
 }
-
-function editList() {
-	var list = $(this).prev()
-	var position = $('#list').offset()
-	var editor = $('#listEditor')
-	list.addClass('editing')
-	editor.html(list.html().replace("<li>","").replace(/\s+/g," ").replace(/<li>/g, "\n").replace(/<\/li>/g, ""))
-	$('#listEditor').css({
-		left: position.left+ 28,
-		top: position.top - 2,
-		display: 'block',
-		position: 'fixed',
-		width: list.children().first().outerWidth()
-	})
-	$('#listEditor').focus()
-
-}
-
-
-
-function completeEdit() {
-	var text = this.value
-	$('#list').html('<li>' + text.replace(/\n/g,"<li>"))
-	$(this).css('display','none')
-}
+////////////////////////////////////
 
 function resizeColumns(e, ui) {
 	var minHeight = 0
 	$('.column').each(function (idx, col) {
 		$('.column').css('min-height', 0)
 		var h = $(col).height()
-		console.log(h)
 		minHeight = (h > minHeight) ? h : minHeight
 	})
-	console.log('min-height',minHeight)
 	$('.column').css('minHeight',minHeight)
 }
 
+function editListItem(e) {
+	switch(e.which) {
+		case 13: //up
+			e.preventDefault()
+			$(this).after('<li><span class="handle">&nbsp;&nbsp;&nbsp;</span><div contentEditable="true">Hello</div></li>')
+
+			var next = $(this).next().children('div').get(0)
+			$(this).next().bind({'keydown':editListItem})
+			next.focus()
+			focusEditable(next)
+			break;
+		case 40: //down
+			var next = $(this).next().children('div').get(0)
+			if (next != null) {
+				next.focus()
+				focusEditable(next, true)
+			}
+			break;
+		case 38: //up
+			var next = $(this).prev().children('div').get(0)
+			if (next != null) {
+				next.focus()
+				focusEditable(next, true)
+			}
+			break;
+	}
+
+}
+
 $(document).ready(function() {
-	$('.edit-link').bind('click', editList)
-	$('#listEditor').bind('keyup', updateList)
-	$('#listEditor').bind('blur', completeEdit)
 	$('.column').sortable({
 		connectWith: '.column',
 		handle: 'h1',
@@ -58,5 +75,12 @@ $(document).ready(function() {
 		}
 	})
 
+	$('.list ul > li').each(function(idx, el) {
+		$(el).html('<span class="handle">&nbsp;&nbsp;&nbsp;</span><div contentEditable="true">' + $(el).html()+ '</div>')
+		$(el).bind ({
+			'keydown': editListItem,
+		})
 
+	})
+	$('.list ul').sortable({handle:'span', revert:true})
 })
