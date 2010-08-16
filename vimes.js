@@ -75,12 +75,12 @@ $(document).ready(function() {
 		}
 	})
 
-	$('.list ul > li').each(function(idx, el) {
+	$('.list ul > li, .list ol > li').each(function(idx, el) {
 		$(el).html('<span class="handle">&nbsp;&nbsp;&nbsp;</span><div contentEditable="true">' + $(el).html()+ '</div>')
 		$(el).bind ({
 			'keydown': editListItem,
 		})
 
 	})
-	$('.list ul').sortable({handle:'span', revert:true})
+	$('.list ul, .list ol').sortable({handle:'span', revert:true})
 })
