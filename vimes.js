@@ -35,7 +35,7 @@ function editListItem(e) {
 	switch(e.which) {
 		case 13: //up
 			e.preventDefault()
-			$(this).after('<li><span class="handle">&nbsp;&nbsp;&nbsp;</span><div contentEditable="true">Hello</div></li>')
+			$(this).after('<li><span class="handle">&nbsp;&nbsp;&nbsp;</span><div contentEditable="true">I am a new item!</div></li>')
 
 			var next = $(this).next().children('div').get(0)
 			$(this).next().bind({'keydown':editListItem})
