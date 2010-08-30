@@ -61,6 +61,11 @@ function editListItem(e) {
 }
 
 $(document).ready(function() {
+	$('.grid_4').append('<div class="add-button"><a href="#" class="button blue">Create list!</a></div>')
+	$('.grid_4').hover(
+		function() {$(this).addClass('hover')},
+		function() {$(this).removeClass('hover')}
+	)
 	$('.column').sortable({
 		connectWith: '.column',
 		handle: 'h1',
