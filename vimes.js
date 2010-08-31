@@ -37,13 +37,18 @@ function editHeader(e) {
 			e.preventDefault()
 	}
 }
-
+function completeListEdit() {
+	console.log('blurred')
+		console.log($(this).text())
+	if ($(this).text().replace(/\W+/g,'') == "") {
+		$(this).remove()
+	}
+}
 function editListItem(e) {
 	switch(e.which) {
 		case 13: //up
 			e.preventDefault()
 			$(this).after('<li><span class="handle">&nbsp;&nbsp;&nbsp;</span><div contentEditable="true">I am a new item!</div></li>')
-
 			var next = $(this).next().children('div').get(0)
 			next.focus()
 			focusEditable(next)
@@ -113,5 +118,6 @@ $(document).ready(function() {
 
 	})
 	$('.list ul > li, .list ol > li').live('keydown', editListItem)
+	$('.list ul > li, .list ol > li').live('blur', completeListEdit)
 	$('.list ul, .list ol').sortable({handle:'span', revert:true})
 })
