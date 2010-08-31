@@ -38,8 +38,6 @@ function editHeader(e) {
 	}
 }
 function completeListEdit() {
-	console.log('blurred')
-		console.log($(this).text())
 	if ($(this).text().replace(/\W+/g,'') == "") {
 		$(this).remove()
 	}
@@ -105,7 +103,6 @@ $(document).ready(function() {
 		start: function (event, ui) {
 			ui.placeholder.height($(ui.item).height())
 			ui.item.parent().parent().removeClass('hover')
-			console.log(ui)
 
 		}
 	})
@@ -113,7 +110,6 @@ $(document).ready(function() {
 	$('.workarea h1').live('keydown', editHeader)
 
 	$('.list ul > li, .list ol > li').each(function(idx, el) {
-			console.log('here')
 		$(el).html('<span class="handle">&nbsp;&nbsp;&nbsp;</span><div contentEditable="true">' + $(el).html()+ '</div>')
 
 	})
