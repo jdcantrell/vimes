@@ -31,6 +31,13 @@ function resizeColumns(e, ui) {
 	$('.column').css('minHeight',minHeight)
 }
 
+function editHeader(e) {
+	switch(e.which) {
+		case 13:
+			e.preventDefault()
+	}
+}
+
 function editListItem(e) {
 	switch(e.which) {
 		case 13: //up
@@ -38,7 +45,6 @@ function editListItem(e) {
 			$(this).after('<li><span class="handle">&nbsp;&nbsp;&nbsp;</span><div contentEditable="true">I am a new item!</div></li>')
 
 			var next = $(this).next().children('div').get(0)
-			$(this).next().bind({'keydown':editListItem})
 			next.focus()
 			focusEditable(next)
 			break;
@@ -57,11 +63,28 @@ function editListItem(e) {
 			}
 			break;
 	}
+}
 
+function createList() {
+	var li = $(document.createElement('li'))
+	var h1 = $(document.createElement('h1'))
+	var ul = $(document.createElement('ul'))
+
+	h1.attr('contentEditable', true)
+	h1.html('New List')
+
+	ul.append('<li><span class="handle">&nbsp;&nbsp;&nbsp;</span><div contentEditable="true">Click here to edit your new list</div>')
+	ul.sortable({handle:'span', revert:true})
+	
+	li.addClass('list')
+	li.append(h1)
+	li.append(ul)
+	$(this).parent().before(li)
 }
 
 $(document).ready(function() {
-	$('.grid_4').append('<div class="add-button"><a href="#" class="button blue">Create list!</a></div>')
+	$('.column').append('<li class="add-button"><a href="#" class="button blue">Create list!</a></li>')
+	$('.add-button a').click(createList)
 	$('.grid_4').hover(
 		function() {$(this).addClass('hover')},
 		function() {$(this).removeClass('hover')}
@@ -75,17 +98,20 @@ $(document).ready(function() {
 		revert: true,
 		sort: resizeColumns,
 		start: function (event, ui) {
-			$(ui.placeholder).height($(ui.item).height())
+			ui.placeholder.height($(ui.item).height())
+			ui.item.parent().parent().removeClass('hover')
+			console.log(ui)
 
 		}
 	})
+	$('.workarea h1').attr('contentEditable', true)
+	$('.workarea h1').live('keydown', editHeader)
 
 	$('.list ul > li, .list ol > li').each(function(idx, el) {
+			console.log('here')
 		$(el).html('<span class="handle">&nbsp;&nbsp;&nbsp;</span><div contentEditable="true">' + $(el).html()+ '</div>')
-		$(el).bind ({
-			'keydown': editListItem,
-		})
 
 	})
+	$('.list ul > li, .list ol > li').live('keydown', editListItem)
 	$('.list ul, .list ol').sortable({handle:'span', revert:true})
 })
