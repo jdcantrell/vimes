@@ -84,12 +84,12 @@ function createList() {
 	li.append(ul)
 	$(this).parent().before(li)
 }
-
+showHover = true
 $(document).ready(function() {
 	$('.column').append('<li class="add-button"><a href="#" class="button blue">Create list!</a></li>')
 	$('.add-button a').click(createList)
 	$('.grid_4').hover(
-		function() {$(this).addClass('hover')},
+		function() {if (showHover) $(this).addClass('hover')},
 		function() {$(this).removeClass('hover')}
 	)
 	$('.column').sortable({
@@ -102,8 +102,14 @@ $(document).ready(function() {
 		sort: resizeColumns,
 		start: function (event, ui) {
 			ui.placeholder.height($(ui.item).height())
-			ui.item.parent().parent().removeClass('hover')
-
+			ui.placeholder.parents('.grid_4').removeClass('hover')
+			showHover = false
+		},
+		stop: function (event, ui) {
+			var add = ui.item.parent('.column').children('.add-button')
+			add.appendTo(ui.item.parent('.column'))
+			ui.item.parents('.grid_4').addClass('hover')
+			showHover = true
 		}
 	})
 	$('.workarea h1').attr('contentEditable', true)
