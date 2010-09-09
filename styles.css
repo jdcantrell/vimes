@@ -148,3 +148,10 @@ body {
 	padding:3px;
 	float: right
 }
+.marked div {
+	text-decoration:line-through
+}
+li span {
+	-moz-user-select: none;
+	-webkit-user-select: none;
+}

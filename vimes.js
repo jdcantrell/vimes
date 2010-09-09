@@ -84,6 +84,19 @@ function createList() {
 	li.append(ul)
 	$(this).parent().before(li)
 }
+
+function markItem(e) {
+	console.log('marked!')
+	$(this).parent().toggleClass('marked')
+	//clear selection
+	if (window.getSelection) {
+		if (window.getSelection().empty) window.getSelection().empty()
+		else if (window.getSelection().removeAllRanges) window.getSelection.removeAllRanges()
+	}
+	else if (document.selection) {
+		document.selection.empty()
+	}
+}
 showHover = true
 $(document).ready(function() {
 	$('.column').append('<li class="add-button"><a href="#" class="button blue">Create list!</a></li>')
@@ -122,4 +135,5 @@ $(document).ready(function() {
 	$('.list ul > li, .list ol > li').live('keydown', editListItem)
 	$('.list ul > li, .list ol > li').live('blur', completeListEdit)
 	$('.list ul, .list ol').sortable({handle:'span', revert:true})
+	$('.list ul span, .list ol span').live('click', markItem)
 })
