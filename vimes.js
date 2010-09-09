@@ -97,6 +97,15 @@ function markItem(e) {
 		document.selection.empty()
 	}
 }
+function displayToolbar() {
+	a = this
+	var header = $(this).children('h1')
+	var pos = header.offset()
+	var h = header.height() - 5
+	$('#toolbar').css({'left': pos.left, 'top':pos.top + h,'position':'absolute'})
+}
+function hideToolbar() {}
+
 showHover = true
 $(document).ready(function() {
 	$('.column').append('<li class="add-button"><a href="#" class="button blue">Create list!</a></li>')
@@ -127,7 +136,7 @@ $(document).ready(function() {
 	})
 	$('.workarea h1').attr('contentEditable', true)
 	$('.workarea h1').live('keydown', editHeader)
-
+	$('.list').hover(displayToolbar, hideToolbar)
 	$('.list ul > li, .list ol > li').each(function(idx, el) {
 		$(el).html('<span class="handle">&nbsp;&nbsp;&nbsp;</span><div contentEditable="true">' + $(el).html()+ '</div>')
 

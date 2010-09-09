@@ -155,3 +155,14 @@ li span {
 	-moz-user-select: none;
 	-webkit-user-select: none;
 }
+#toolbar {
+	position:absolute;
+	border:1px solid #0f0;
+	height:25px;
+}
+#toolbar ul {margin:0;padding:0;list-style:none}
+#toolbar li {
+	padding:2px;
+	margin:0;
+	float:left;
+}
