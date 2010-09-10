@@ -40,10 +40,10 @@ input {
 	margin-bottom:20px;
 }
 
-li .handle {
+.handle {
 	position:absolute;
-	left:12px;
-	cursor:move;
+	left:5px;
+	cursor:pointer;
 }
 
 /* button css based off of web designer wall*/
