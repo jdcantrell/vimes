@@ -157,12 +157,28 @@ li span {
 }
 #toolbar {
 	position:absolute;
-	border:1px solid #0f0;
-	height:25px;
+	height:21px;
+	font-size:12px;
+	font-weight:bold;
+	letter-spacing:0.2px;
+	line-height:1.5em;
+	padding:0 2px 0 2px;
 }
 #toolbar ul {margin:0;padding:0;list-style:none}
 #toolbar li {
-	padding:2px;
 	margin:0;
 	float:left;
+	margin-right:15px;
+}
+.color-button {
+	background-image:url(images/applications-graphics.png);
+	background-repeat:no-repeat;
+	background-position:left 2px;
+	padding:2px 2px 2px 18px;
+}
+.delete-button {
+	background-image:url(images/edit-delete.png);
+	background-repeat:no-repeat;
+	background-position:left 2px;
+	padding:2px 2px 2px 18px;
 }

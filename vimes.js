@@ -101,7 +101,7 @@ function displayToolbar() {
 	a = this
 	var header = $(this).children('h1')
 	var pos = header.offset()
-	var h = header.height() - 5
+	var h = header.height() - 3
 	$('#toolbar').css({'left': pos.left, 'top':pos.top + h,'position':'absolute'})
 }
 function hideToolbar() {}
