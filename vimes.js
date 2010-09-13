@@ -123,7 +123,15 @@ function removeList() {
 function displayColorList() {
 	$(this).parent().toggleClass('active')
 }
-
+function setListColor() {
+	var list = $(this).parents('.list')
+	var currentClass = list.attr('class').match(/[a-z0-9-]*-text/)
+	if (currentClass != null) {
+		list.removeClass(currentClass[0])
+	}
+	var classes = $(this).attr('class')
+	list.addClass(classes.match(/[a-z0-9-]*-background/)[0].replace('background','text'))
+}
 showHover = true
 $(document).ready(function() {
 	$('.column').append('<li class="add-button"><a href="#" class="button blue">Create list!</a></li>')
@@ -170,4 +178,5 @@ $(document).ready(function() {
 	$('.list ul span, .list ol span').live('dblclick', removeItem)
 	$('#delete-button').click(removeList)
 	$('#color-button > a').click(displayColorList)
+	$('.color-swatch').click(setListColor)
 })

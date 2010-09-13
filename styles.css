@@ -210,21 +210,21 @@ li span {
 .color-input input {width:68px}
 .color-input input[type=button] {width:i20px}
 
-.red {color:#cd170e}
-.orange {color:#ffaa00}
-.yellow {color:#ffe700}
-.green {color:#a8c630}
-.pine {color:#59691a}
-.seagreen {color:#1a694e}
-.turquoise {color:#1ab8cf}
-.seafoam {color:#1acfa7}
-.green2 {color:#65c630}
-.blue {color:#3458a9}
-.midnight {color:#122b6e}
-.lightblue {color:#37a1ec}
-.purple {color:#7b34a9}
-.royal {color:#5a34a0}
-.plum {color:#540f68}
+.red-text {color:#cd170e}
+.orange-text {color:#ffaa00}
+.yellow-text {color:#ffe700}
+.green-text {color:#a8c630}
+.pine-text {color:#59691a}
+.seagreen-text {color:#1a694e}
+.turquoise-text {color:#1ab8cf}
+.seafoam-text {color:#1acfa7}
+.green2-text {color:#65c630}
+.blue-text {color:#3458a9}
+.midnight-text {color:#122b6e}
+.lightblue-text {color:#37a1ec}
+.purple-text {color:#7b34a9}
+.royal-text {color:#5a34a0}
+.plum-text {color:#540f68}
 
 
 .red-background {background-color:#cd170e}
