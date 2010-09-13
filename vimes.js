@@ -86,7 +86,6 @@ function createList() {
 }
 
 function markItem(e) {
-	console.log('marked!')
 	$(this).parent().toggleClass('marked')
 	//clear selection
 	if (window.getSelection) {
@@ -97,14 +96,30 @@ function markItem(e) {
 		document.selection.empty()
 	}
 }
-function displayToolbar() {
-	a = this
-	var header = $(this).children('h1')
-	var pos = header.offset()
-	var h = header.height() - 3
-	$('#toolbar').css({'left': pos.left, 'top':pos.top + h,'position':'absolute'})
+function removeItem(e) {
+	$(this).parent().remove()
+}
+function displayToolbar(item) {
+	if (typeof item.currentTarget != 'undefined') {
+		//called from an event handler no item given
+		var item = this
+	}
+
+	var pos = $(item).offset()
+	$('#toolbar').css('top', pos.top + 0)
+	if (showHover) $('#toolbar').css('display','block')
+	$(item).append($('#toolbar'))
 }
 function hideToolbar() {}
+
+function removeList() {
+	$('#toolbar').css('display','none')
+	var list = $('#toolbar').parent()
+	$(document.body).append($('#toolbar'))
+	list.remove()
+	return false;
+}
+function setListColor() {}
 
 showHover = true
 $(document).ready(function() {
@@ -126,17 +141,21 @@ $(document).ready(function() {
 			ui.placeholder.height($(ui.item).height())
 			ui.placeholder.parents('.grid_4').removeClass('hover')
 			showHover = false
+			$('#toolbar').css('display','none')
 		},
 		stop: function (event, ui) {
 			var add = ui.item.parent('.column').children('.add-button')
 			add.appendTo(ui.item.parent('.column'))
 			ui.item.parents('.grid_4').addClass('hover')
 			showHover = true
+			displayToolbar(ui.item)
+			$('#toolbar').css('display','block')
 		}
 	})
 	$('.workarea h1').attr('contentEditable', true)
 	$('.workarea h1').live('keydown', editHeader)
-	$('.list').hover(displayToolbar, hideToolbar)
+	$('.list').live('mouseenter',displayToolbar)
+	$('.list').live('mouseleave',hideToolbar)
 	$('.list ul > li, .list ol > li').each(function(idx, el) {
 		$(el).html('<span class="handle">&nbsp;&nbsp;&nbsp;</span><div contentEditable="true">' + $(el).html()+ '</div>')
 
@@ -145,4 +164,7 @@ $(document).ready(function() {
 	$('.list ul > li, .list ol > li').live('blur', completeListEdit)
 	$('.list ul, .list ol').sortable({handle:'span', revert:true})
 	$('.list ul span, .list ol span').live('click', markItem)
+	$('.list ul span, .list ol span').live('dblclick', removeItem)
+	$('#delete-button').click(removeList)
+	$('#color-button').click(setListColor)
 })

@@ -156,7 +156,10 @@ li span {
 	-webkit-user-select: none;
 }
 #toolbar {
+	display:none;
 	position:absolute;
+	left:0;
+	top:30px;
 	height:21px;
 	font-size:12px;
 	font-weight:bold;
@@ -170,13 +173,13 @@ li span {
 	float:left;
 	margin-right:15px;
 }
-.color-button {
+#color-button {
 	background-image:url(images/applications-graphics.png);
 	background-repeat:no-repeat;
 	background-position:left 2px;
 	padding:2px 2px 2px 18px;
 }
-.delete-button {
+#delete-button {
 	background-image:url(images/edit-delete.png);
 	background-repeat:no-repeat;
 	background-position:left 2px;

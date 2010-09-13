@@ -26,7 +26,8 @@
 							<li>Click on any item or header to edit</li>
 							<li>When editing press enter to create a new item</li>
 							<li>Use the up and down arrows to navigate the list</li>
-							<li>Click an item bullet to mark item</li>
+							<li>Click an item bullet to cross out an item</li>
+							<li>Double clik an item to delete</li>
 							<li>Click and drag an item bullet to reorder</li>
 							<li>Click and drag a list header to rearrange lists</li>
 							<li>Delete all text to remove an item (Press Ctrl+A and then Delete)</li>
@@ -39,12 +40,11 @@
 					<li class="list">
 						<h1>Vimes Todo</h1>
 						<ul>
-							<li>Setup toolbar for editing list properties</li>
-							<li>Think of a better way to remove items</li>
-							<li>Style vimes to look nice</li>
+							<li>Make color dialog work</li>
 							<li>Allow lists to be saved (possibly by cookie, but also with ajax/python)</li>
-							<li>Multiple pages</li>
 							<li>And fix everything that is broken IE (I'm staring at you list bullets!)</li>
+							<li>Style vimes to look nice</li>
+							<li>Multiple pages</li>
 						</ul>
 					</li>
 				</ul>
@@ -66,8 +66,8 @@
 		</div>
 		<div id="toolbar">
 			<ul>
-				<li class="color-button">Colors</li>
-				<li class="delete-button">Remove</li>
+				<li id="color-button"><a href="#">Colors</a></li>
+				<li id="delete-button"><a href="#">Remove</a></li>
 			</ul>
 		</div>
 		<script type='text/javascript' src='http://ajax.googleapis.com/ajax/libs/jquery/1.4/jquery.min.js'></script>
