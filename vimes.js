@@ -109,6 +109,7 @@ function displayToolbar(item) {
 	$('#toolbar').css('top', pos.top + 0)
 	if (showHover) $('#toolbar').css('display','block')
 	$(item).append($('#toolbar'))
+	$('#color-button').removeClass('active')
 }
 function hideToolbar() {}
 
@@ -119,7 +120,9 @@ function removeList() {
 	list.remove()
 	return false;
 }
-function setListColor() {}
+function displayColorList() {
+	$(this).parent().toggleClass('active')
+}
 
 showHover = true
 $(document).ready(function() {
@@ -166,5 +169,5 @@ $(document).ready(function() {
 	$('.list ul span, .list ol span').live('click', markItem)
 	$('.list ul span, .list ol span').live('dblclick', removeItem)
 	$('#delete-button').click(removeList)
-	$('#color-button').click(setListColor)
+	$('#color-button > a').click(displayColorList)
 })
