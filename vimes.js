@@ -1,6 +1,6 @@
 //Focus code found and based on:
 //http://stackoverflow.com/questions/2871081/jquery-setting-cursor-posistion-in-contenteditable-div
-focusEditable = function(el,collapse) {
+function focusEditable(el,collapse) {
 	window.setTimeout(function() {
 			var sel, range
 			if (window.getSelection && document.createRange) {//for standards 
@@ -32,16 +32,15 @@ function resizeColumns(e, ui) {
 }
 
 function editHeader(e) {
-	switch(e.which) {
-		case 13:
-			e.preventDefault()
-	}
+	if (e.which == 13) e.preventDefault()
 }
+
 function completeListEdit() {
 	if ($(this).text().replace(/\W+/g,'') == "") {
 		$(this).remove()
 	}
 }
+
 function editListItem(e) {
 	switch(e.which) {
 		case 13: //up
@@ -96,22 +95,22 @@ function markItem(e) {
 		document.selection.empty()
 	}
 }
+
 function removeItem(e) {
 	$(this).parent().remove()
 }
+
 function displayToolbar(item) {
 	if (typeof item.currentTarget != 'undefined') {
 		//called from an event handler no item given
 		var item = this
 	}
-
 	var pos = $(item).offset()
 	$('#toolbar').css('top', pos.top + 0)
 	if (showHover) $('#toolbar').css('display','block')
 	$(item).append($('#toolbar'))
 	$('#color-button').removeClass('active')
 }
-function hideToolbar() {}
 
 function serialize() {
 	var columns = $('.list')
@@ -133,8 +132,6 @@ function serialize() {
 		
 		})
 	})
-	console.log(page)
-	
 }
 
 function removeList() {
@@ -144,9 +141,11 @@ function removeList() {
 	list.remove()
 	return false;
 }
+
 function displayColorList() {
 	$(this).parent().toggleClass('active')
 }
+
 function setListColor() {
 	var list = $(this).parents('.list')
 	list.css('color','')
@@ -158,6 +157,7 @@ function setListColor() {
 	list.addClass(classes.match(/[a-z0-9-]*-background/)[0].replace('background','text'))
 	$(this).parents('#color-button').toggleClass('active')
 }
+
 function setCustomColor() {
 	var colorInput = $(this).prev()
 	var list = $(this).parents('.list')
@@ -169,7 +169,8 @@ function setCustomColor() {
 	colorInput[0].value = ''
 	$(this).parents('#color-button').toggleClass('active')
 }
-showHover = true
+
+var showHover = true
 $(document).ready(function() {
 	$('.column').append('<li class="add-button"><a href="#" class="button blue">Create list!</a></li>')
 	$('.add-button a').click(createList)
@@ -203,10 +204,8 @@ $(document).ready(function() {
 	$('.workarea h1').attr('contentEditable', true)
 	$('.workarea h1').live('keydown', editHeader)
 	$('.list').live('mouseenter',displayToolbar)
-	$('.list').live('mouseleave',hideToolbar)
 	$('.list ul > li, .list ol > li').each(function(idx, el) {
 		$(el).html('<span class="handle">&nbsp;&nbsp;&nbsp;</span><div contentEditable="true">' + $(el).html()+ '</div>')
-
 	})
 	$('.list ul > li, .list ol > li').live('keydown', editListItem)
 	$('.list ul > li, .list ol > li').live('blur', completeListEdit)
