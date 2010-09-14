@@ -113,6 +113,29 @@ function displayToolbar(item) {
 }
 function hideToolbar() {}
 
+function serialize() {
+	var columns = $('.list')
+	var page = {}
+	columns.each(function (index, list) {
+		var col = $(list).parent().attr('class').replace(/ |column|ui-sortable/g,'')
+		if (typeof page['column' + col] == 'undefined') page['column' + col] = {}
+		page['column' + col]['list-' + index] = {
+			header:$(list).children('h1').text(),
+			cls: $(list).attr('class').replace('list',''),
+			type: 'ul',
+			items:[]
+		}
+		$(list).children('ul,ol').children('li').children('div').each(function (idx, item) {
+			if ($(item).parents('ol').length) {
+				page['column' + col]['list-' + index].type = 'ol'
+			}
+			page['column' + col]['list-' + index].items.push($(item).text())
+		
+		})
+	})
+	console.log(page)
+	
+}
 
 function removeList() {
 	$('#toolbar').css('display','none')
