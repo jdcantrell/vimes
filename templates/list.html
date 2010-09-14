@@ -1,0 +1,80 @@
+{% extends 'base.html' %}
+{% block title %} A List Page! {% endblock %}
+{% block body %}
+<div class="grid_4">
+    <ul class="column column-1">
+        <li class="list">
+            <h1>How to use</h1>
+            <ol>
+                <li>Click on any item or header to edit</li>
+                <li>When editing press enter to create a new item</li>
+                <li>Use the up and down arrows to navigate the list</li>
+                <li>Click an item bullet to cross out an item</li>
+                <li>Double click an item to delete</li>
+                <li>Click and drag an item bullet to reorder</li>
+                <li>Click and drag a list header to rearrange lists</li>
+                <li>Delete all text to remove an item (Press Ctrl+A and then Delete)</li>
+            </ol>
+        </li>
+    </ul>
+</div>
+<div class="grid_4">
+    <ul class="column column-2">
+        <li class="list">
+            <h1>Vimes Todo</h1>
+            <ul>
+                <li>Allow lists to be saved</li>
+                <li>Add in auto saver</li>
+                <li>And fix everything that is broken IE (I'm staring at you list bullets!)</li>
+                <li>Style vimes to look nice</li>
+                <li>Multiple pages</li>
+            </ul>
+        </li>
+    </ul>
+</div>
+<div class="grid_4">
+    <ul class="column column-3">
+        <li class="list">
+            <h1>Another random list!</h1>
+            <ul><li>Alpha</li>
+                <li>Bravo</li>
+                <li>Charlie</li>
+                <li>Delta</li>
+                <li>Echo</li>
+                <li>Foxtrot</li>
+            </ul>
+        </li>
+    </ul>
+</div>
+{% endblock %}
+{% block scripts %}
+<div id="toolbar">
+    <ul>
+        <li id="color-button"><a href="#">Colors</a>
+            <ul id="color-selector">
+                <li class="color-swatch red-background"></li>
+                <li class="color-swatch seagreen-background"></li>
+                <li class="color-swatch green2-background"></li>
+                <li class="color-swatch midnight-background"></li>
+                <li class="color-swatch purple-background"></li>
+
+                <li class="color-swatch orange-background"></li>
+                <li class="color-swatch pine-background"></li>
+                <li class="color-swatch seafoam-background"></li>
+                <li class="color-swatch blue-background"></li>
+                <li class="color-swatch royal-background"></li>
+
+                <li class="color-swatch yellow-background"></li>
+                <li class="color-swatch green-background"></li>
+                <li class="color-swatch turquoise-background"></li>
+                <li class="color-swatch lightblue-background"></li>
+                <li class="color-swatch plum-background"></li>
+                <li class="color-input"><input type='text'><a id="set-color" class="button blue small">Set</a></li>
+            </ul>
+        
+        </li>
+        <li id="delete-button"><a href="#">Remove</a></li>
+    </ul>
+</div>
+<script type='text/javascript' src='{{ url_for('static', filename='vimes.js') }}'></script>
+{% endblock %}
