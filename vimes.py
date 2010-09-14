@@ -3,22 +3,23 @@ from flask import Flask, render_template, g
 from contextlib import closing
 import MySQLdb
 
-
 app = Flask(__name__)
 app.config.from_object('config')
 app.config.from_envvar('VIMES_SETTINGS')
 
 def init_db():
-    with closing(MySQLdb.connect(host = g.DB_HOST, user = g.DB_USER, \
-            passwd = g.DB_PASSWORD, db = g.DB_DATABASE)) as db:
+    with closing(MySQLdb.connect(host = app.config['DB_HOST'], \
+        user = app.config['DB_USER'], passwd = app.config['DB_PASSWORD'],\
+        db = app.config['DB_DATABASE'])) as db:
         with app.open_resource('schema.sql') as f:
             db.cursor().execute(f.read())
         db.commit()
 
 @app.before_request
 def before_request():
-    g.db = MySQLdb.connect(host = g.DB_HOST, user = g.DB_USER, \
-            passwd = g.DB_PASSWORD, db = g.DB_DATABASE)
+    g.db = MySQLdb.connect(host = app.config['DB_HOST'], \
+        user = app.config['DB_USER'], passwd = app.config['DB_PASSWORD'], \
+        db = app.config['DB_DATABASE'])
 
 @app.after_request
 def after_request(response):
@@ -30,10 +31,9 @@ def after_request(response):
 def start():
     return render_template('start.html')
 
-@app.route("/public/<listname>")
-def public_list(listname):
+@app.route("/public/<list>")
+def public_list(list):
     return render_template('list.html')
 
 if __name__ == "__main__":
-    app.debug = True
-    app.run(host='0.0.0.0', port=8888)
+    app.run(host='0.0.0.0')
