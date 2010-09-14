@@ -113,6 +113,7 @@ function displayToolbar(item) {
 }
 function hideToolbar() {}
 
+
 function removeList() {
 	$('#toolbar').css('display','none')
 	var list = $('#toolbar').parent()
@@ -125,12 +126,25 @@ function displayColorList() {
 }
 function setListColor() {
 	var list = $(this).parents('.list')
+	list.css('color','')
 	var currentClass = list.attr('class').match(/[a-z0-9-]*-text/)
 	if (currentClass != null) {
 		list.removeClass(currentClass[0])
 	}
 	var classes = $(this).attr('class')
 	list.addClass(classes.match(/[a-z0-9-]*-background/)[0].replace('background','text'))
+	$(this).parents('#color-button').toggleClass('active')
+}
+function setCustomColor() {
+	var colorInput = $(this).prev()
+	var list = $(this).parents('.list')
+	list.css('color',colorInput[0].value)
+	var currentClass = list.attr('class').match(/[a-z0-9-]*-text/)
+	if (currentClass != null) {
+		list.removeClass(currentClass[0])
+	}
+	colorInput[0].value = ''
+	$(this).parents('#color-button').toggleClass('active')
 }
 showHover = true
 $(document).ready(function() {
@@ -179,4 +193,5 @@ $(document).ready(function() {
 	$('#delete-button').click(removeList)
 	$('#color-button > a').click(displayColorList)
 	$('.color-swatch').click(setListColor)
+	$('#set-color').click(setCustomColor)
 })
