@@ -34,7 +34,7 @@ def start():
 def public_list(list):
     cursor = g.db.cursor()
     cursor.execute('select * from list_pages where public = 1 and user_id \
-        is NULL and title = %s', g.db.escape_string(list))
+        is NULL and title = %s', list)
     row = cursor.fetchone()
     if row != None:
         return render_template('list.html')
