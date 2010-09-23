@@ -1,5 +1,5 @@
 from __future__ import with_statement
-from flask import Flask, render_template, g, session
+from flask import Flask, render_template, g, session, request
 from contextlib import closing
 import MySQLdb
 
@@ -39,6 +39,21 @@ def public_list(list):
     if row != None:
         return render_template('list.html')
     return render_template('new_list.html')
+
+@app.route("/save/public/<list>", methods=['POST','GET'])
+def save_list(list):
+    cursor = g.db.cursor()
+    cursor.execute('select * from list_pages where public = 1 and user_id \
+            is NULL and title = %s', list)
+    row = cursor.fetchone()
+    if row != None:
+        cursor.execute('update list_pages set data = %s where \
+                title = %s', (request.form['data'], list))
+    else:
+        cursor.execute('insert into list_pages (data, title, public, user_id) values \
+                (%s,%s, 1, NULL)', (request.form['data'], list))
+    return "Success"
+
 
 if __name__ == "__main__":
     app.run(host='0.0.0.0')
