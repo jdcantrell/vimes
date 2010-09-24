@@ -21,6 +21,33 @@ function focusEditable(el,collapse) {
 }
 ////////////////////////////////////
 
+messenger = {
+    updates: 0,
+    update: function(msg) {
+        messenger.updates++
+        $('#status-message').text(msg)
+    },
+    complete: function () {
+        messenger.updates--
+        if (messenger.updates == 0) {
+            $('#status-message').text('Everything is all good!')
+        }
+    }
+}
+autoSave = {
+    dirty: function() {
+        autoSave.saveFlag = true
+        messenger.update('You have unsaved changes')
+    },
+    save: function() {
+        if (autoSave.saveFlag) {
+            messenger.updates--
+            save()
+        }
+        autoSave.saveFlag = false
+    }
+}
+
 function resizeColumns(e, ui) {
 	var minHeight = 0
 	$('.column').each(function (idx, col) {
@@ -32,16 +59,19 @@ function resizeColumns(e, ui) {
 }
 
 function editHeader(e) {
+    autoSave.dirty()
 	if (e.which == 13) e.preventDefault()
 }
 
 function completeListEdit() {
+    autoSave.dirty()
 	if ($(this).text().replace(/\W+/g,'') == "") {
 		$(this).remove()
 	}
 }
 
 function editListItem(e) {
+    autoSave.dirty()
 	switch(e.which) {
 		case 13: //up
 			e.preventDefault()
@@ -68,6 +98,7 @@ function editListItem(e) {
 }
 
 function createList() {
+    autoSave.dirty()
 	var li = $(document.createElement('li'))
 	var h1 = $(document.createElement('h1'))
 	var ul = $(document.createElement('ul'))
@@ -85,6 +116,7 @@ function createList() {
 }
 
 function markItem(e) {
+    autoSave.dirty()
 	$(this).parent().toggleClass('marked')
 	//clear selection
 	if (window.getSelection) {
@@ -97,6 +129,7 @@ function markItem(e) {
 }
 
 function removeItem(e) {
+    autoSave.dirty()
 	$(this).parent().remove()
 }
 
@@ -110,6 +143,30 @@ function displayToolbar(item) {
 	if (showHover) $('#toolbar').css('display','block')
 	$(item).append($('#toolbar'))
 	$('#color-button').removeClass('active')
+}
+
+function saveFail(a,b,c) {
+    console.log('save failed',a,b,c)
+}
+
+function updateSave() {
+    messenger.complete()
+}
+
+function save() {
+    messenger.update('Saving changes...')
+    messenger.updates = 1
+    var list = window.location.href.split('/').pop()
+    console.log(list, typeof list)
+    var url = '/save/public/' + list
+    console.log(url, typeof url)
+    $.ajax({
+        type: 'POST',
+        data: {data:serialize()},
+        url: url,
+        success: updateSave,
+        error: saveFail
+    })
 }
 
 function serialize() {
@@ -132,9 +189,11 @@ function serialize() {
 		
 		})
 	})
+    return JSON.stringify(page)
 }
 
 function removeList() {
+    autoSave.dirty()
 	$('#toolbar').css('display','none')
 	var list = $('#toolbar').parent()
 	$(document.body).append($('#toolbar'))
@@ -144,9 +203,11 @@ function removeList() {
 
 function displayColorList() {
 	$(this).parent().toggleClass('active')
+	return false;
 }
 
 function setListColor() {
+    autoSave.dirty()
 	var list = $(this).parents('.list')
 	list.css('color','')
 	var currentClass = list.attr('class').match(/[a-z0-9-]*-text/)
@@ -156,9 +217,11 @@ function setListColor() {
 	var classes = $(this).attr('class')
 	list.addClass(classes.match(/[a-z0-9-]*-background/)[0].replace('background','text'))
 	$(this).parents('#color-button').toggleClass('active')
+	return false
 }
 
 function setCustomColor() {
+    autoSave.dirty()
 	var colorInput = $(this).prev()
 	var list = $(this).parents('.list')
 	list.css('color',colorInput[0].value)
@@ -216,4 +279,6 @@ $(document).ready(function() {
 	$('#color-button > a').click(displayColorList)
 	$('.color-swatch').click(setListColor)
 	$('#set-color').click(setCustomColor)
+	$('.status').append('<a href="#" onclick="save();return false">Save</a><span id="status-message">Everthing is all good!</span>')
+	window.setInterval(autoSave.save, 5000)
 })
