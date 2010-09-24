@@ -2,6 +2,7 @@ from __future__ import with_statement
 from flask import Flask, render_template, g, session, request
 from contextlib import closing
 import MySQLdb
+import json
 
 app = Flask(__name__)
 app.config.from_object('config')
@@ -37,7 +38,9 @@ def public_list(list):
         is NULL and title = %s', list)
     row = cursor.fetchone()
     if row != None:
-        return render_template('list.html')
+    	print row
+    	data = json.loads(row[4])
+        return render_template('list.html', columns = data, column_list = ['column-1', 'column-2', 'column-3'])
     return render_template('new_list.html')
 
 @app.route("/save/public/<list>", methods=['POST','GET'])
