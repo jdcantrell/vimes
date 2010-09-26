@@ -21,30 +21,29 @@ function focusEditable(el,collapse) {
 }
 ////////////////////////////////////
 
-messenger = {
-    updates: 0,
-    update: function(msg) {
-        messenger.updates++
-        $('#status-message').text(msg)
-    },
-    complete: function () {
-        messenger.updates--
-        if (messenger.updates == 0) {
-            $('#status-message').text('Everything is all good!')
-        }
-    }
-}
 autoSave = {
+    state:'clean',
     dirty: function() {
-        autoSave.saveFlag = true
-        messenger.update('You have unsaved changes')
+        if (autoSave.state != 'dirty') {
+            $('#status-message').text('You have unsaved changes.')
+        }
+        autoSave.state = 'dirty'
     },
     save: function() {
-        if (autoSave.saveFlag) {
-            messenger.updates--
+        if (autoSave.state == 'dirty') {
+            $('#status-message').text('Saving changes...')
             save()
+            autoSave.state = 'clean'
         }
-        autoSave.saveFlag = false
+    },
+    saveComplete: function() {
+        if (autoSave.state == 'dirty') {
+            $('#status-message').text('You have unsaved changes.')
+        }
+        else {
+            $('#status-message').text('Everything is all good!')
+        }
+            
     }
 }
 
@@ -146,31 +145,23 @@ function displayToolbar(item) {
 }
 
 function saveFail(a,b,c) {
-    console.log('save failed',a,b,c)
 }
 
-function updateSave() {
-    messenger.complete()
-}
 
 function save() {
-    messenger.update('Saving changes...')
-    messenger.updates = 1
     var list = window.location.href.split('/').pop()
-    console.log(list, typeof list)
     var url = '/save/public/' + list
-    console.log(url, typeof url)
     $.ajax({
         type: 'POST',
         data: {data:serialize()},
         url: url,
-        success: updateSave,
+        success: autoSave.saveComplete,
         error: saveFail
     })
 }
 
 function serialize() {
-	var columns = $('.list')
+	var columns = $('.column')
 	var page = {}
 	columns.each(function (index, list) {
 		var col = $(list).parent().attr('class').replace(/ |column|ui-sortable/g,'')
@@ -256,6 +247,7 @@ $(document).ready(function() {
 			$('#toolbar').css('display','none')
 		},
 		stop: function (event, ui) {
+		    autoSave.dirty()
 			var add = ui.item.parent('.column').children('.add-button')
 			add.appendTo(ui.item.parent('.column'))
 			ui.item.parents('.grid_4').addClass('hover')
