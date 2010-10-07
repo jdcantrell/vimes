@@ -1,4 +1,4 @@
-"""A short and friendly list web VIMESlication using flask"""
+"""A short and friendly list web application using flask"""
 from __future__ import with_statement
 from flask import Flask, render_template, g, request
 from contextlib import closing
