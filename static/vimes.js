@@ -96,7 +96,8 @@ function editListItem(e) {
     }
 }
 
-function createList() {
+function createList(e) {
+    e.preventDefault()
     autoSave.dirty();
     var li = $(document.createElement('li'));
     var h1 = $(document.createElement('h1'));
@@ -112,6 +113,7 @@ function createList() {
     li.append(h1);
     li.append(ul);
     $(this).parent().before(li);
+    return false
 }
 
 function markItem(e) {
@@ -152,39 +154,43 @@ function saveFail(a, b, c) {
 
 function save() {
     var list = window.location.href.split('/').pop();
-    var url = '/save/public/' + list;
     $.ajax({
         type: 'POST',
         data: {data: serialize()},
-        url: url,
+        url: '/save/public/' + list,
         success: autoSave.saveComplete,
         error: saveFail
     });
 }
 
 function serialize() {
-    var columns = $('.column');
+    var lists = $('.list');
     var page = {};
-    columns.each(function(index, list) {
-        var reg = / |column|ui-sortable/g;
-        var col = $(list).parent().attr('class').replace(reg, '');
-        if (typeof page['column' + col] == 'undefined') {
-            page['column' + col] = {};
-        }
-        page['column' + col]['list-' + index] = {
+    var reg = / |column|ui-sortable/g;
+    lists.each(function(index, list) {
+        var col = 'column' + $(list).parent().attr('class').replace(reg, '');
+        var listId = 'list-' + index
+        if (typeof page[col] == 'undefined') page[col] = {};
+
+        //get list details
+        page[col][listId] = {
             header: $(list).children('h1').text(),
             cls: $(list).attr('class').replace('list', ''),
             type: 'ul',
             items: []
         };
-        $(list).children('ul,ol').children('li').children('div').each(
-        function(idx, item) {
+
+        //get each item in the list
+        var items = $(list).children('ul,ol').children('li').children('div')
+        items.each(function(idx, item) {
             if ($(item).parents('ol').length) {
-                page['column' + col]['list-' + index].type = 'ol';
+                page[col][listId].type = 'ol';
             }
-            page['column' + col]['list-' + index].items.push($(item).text());
+            page[col][listId].items.push($(item).text());
         });
+
     });
+
     return JSON.stringify(page);
 }
 
