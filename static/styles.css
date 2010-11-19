@@ -242,3 +242,7 @@ li span {
 .purple-background {background-color:#7b34a9}
 .royal-background {background-color:#5a34a0}
 .plum-background {background-color:#540f68}
+.auto-save {
+	color:#65c630;
+    text-decoration:none;
+}

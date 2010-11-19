@@ -283,6 +283,6 @@ $(document).ready(function() {
      $('#color-button > a').click(displayColorList);
      $('.color-swatch').click(setListColor);
      $('#set-color').click(setCustomColor);
-     $('.status').append('<a href="#" onclick="save();return false">Save</a><span id="status-message">Everthing is all good!</span>');
+     $('.status').append('<a title="Click to save now" class="auto-save" href="#" onclick="save();return false"><span id="status-message">Everthing is all good!</span><a>');
      window.setInterval(autoSave.save, 5000);
 });
