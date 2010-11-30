@@ -2,6 +2,9 @@
 {% block title %}Vimes: Welcome!{% endblock %}
 {% block body %}
 <div class="grid_12 intro">
+    {% for category, msg in get_flashed_messages(with_categories=true) %}
+        <p class="flash-{{ category }}">{{ msg }}</p>
+    {% endfor %}
     Welcome to Vimes, if you'd like jump in and start creating lists try
     our public lists. If you need to be a little more organized create an
     account and start your own collection lists.

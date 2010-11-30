@@ -13,11 +13,12 @@ class User(Base):
     name = Column(String(255))
     fullname = Column(String(255))
     password = Column(String(255))
+    openid = Column(String(255))
 
-    def __init__(self, name, fullname, password):
+    def __init__(self, name, fullname, openid):
         self.name = name
         self.fullname = fullname
-        self.password = name
+        self.openid = openid
 
     def __repr__(self):
         return "<User('%s', '%s', '%s')>" % (self.name, self.fullname, self.password)

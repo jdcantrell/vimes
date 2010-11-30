@@ -1,14 +1,19 @@
 """A short and friendly list web application using flask"""
 from __future__ import with_statement
-from flask import Flask, render_template, g, request
+import json
+
+from flask import Flask, render_template, g, request, session, flash, redirect, url_for, get_flashed_messages
 from contextlib import closing
 from sqlalchemy import create_engine, orm
+from flaskext.openid import OpenID
+
 from models import User, ListPage, get_metadata
-import json
 
 VIMES = Flask(__name__)
 VIMES.config.from_object('config')
 VIMES.config.from_envvar('VIMES_SETTINGS')
+OID = OpenID(VIMES)
+
 
 @VIMES.before_request
 def before_request():
@@ -22,6 +27,9 @@ def before_request():
 
     g.db_session = orm.sessionmaker(bind=g.db_engine)
     g.db = g.db_session()
+    g.user = None
+    if 'openid' in session:
+        g.user = g.db.query(User).filter_by(openid=session['openid']).first()
 
 
 @VIMES.after_request
@@ -35,6 +43,51 @@ def start():
     """Display friendly start page"""
     return render_template('start.html')
 
+@VIMES.route("/login", methods=['GET', 'POST'])
+@OID.loginhandler
+def login():
+    if g.user is not None:
+        return redirect(OID.get_next_url())
+    if request.method == 'POST':
+        openid = request.form.get('openid')
+        if openid:
+            return OID.try_login(openid, ask_for=['email', 'fullname', 'nickname'])
+    return render_template('login.html', next=OID.get_next_url(), error=OID.fetch_error())
+
+@OID.after_login
+def create_or_login(response):
+    session['openid'] = response.identity_url
+    user = g.db.query(User).filter_by(openid=response.identity_url).first()
+    if user is not None:
+        flash(u'Successfully logged in!')
+        g.user = user
+        return redirect(OID.get_next_url())
+    return redirect(url_for('create_profile', next=OID.get_next_url(), name=response.fullname or response.nickname, email=response.email))
+
+@VIMES.route('/profile', methods=['GET', 'POST'])
+def create_profile():
+    if g.user is not None or 'openid' not in session:
+        return redirect(url_for('start'))
+    if request.method == 'POST':
+        name = request.form['name']
+        email = request.form['email']
+        username = request.form['username']
+        if not name:
+            flash(u'Error: You must provide a username')
+        elif '@' not in email:
+            flash(u'Error: You have to enter a valid email address')
+        else:
+            flash(u'Profile successfully created')
+            g.db.add(User(username, name, session['openid']))
+            g.db.commit()
+            return redirect(OID.get_next_url())
+    return render_template('profile.html', next_url=OID.get_next_url())
+
+@VIMES.route('/logout')
+def logout():
+    session.pop('openid', None)
+    flash(u'You have been signed out, thank you and come again!')
+    return redirect(OID.get_next_url())
 
 @VIMES.route("/public/<list_name>")
 def public_list(list_name):
