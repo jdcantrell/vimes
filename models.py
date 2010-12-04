@@ -14,14 +14,16 @@ class User(Base):
     fullname = Column(String(255))
     password = Column(String(255))
     openid = Column(String(255))
+    email = Column(String(255))
 
-    def __init__(self, name, fullname, openid):
+    def __init__(self, name, fullname, email, openid):
         self.name = name
         self.fullname = fullname
+        self.email = email
         self.openid = openid
 
     def __repr__(self):
-        return "<User('%s', '%s', '%s')>" % (self.name, self.fullname, self.password)
+        return "<User('%s', '%s', '%s')>" % (self.name, self.fullname, self.email, self.openid)
 
 class ListPage(Base):
     __tablename__ = 'list_pages'
