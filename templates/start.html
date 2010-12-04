@@ -1,12 +1,179 @@
-{% extends "base.html" %}
-{% block title %}Vimes: Welcome!{% endblock %}
-{% block body %}
-<div class="grid_12 intro">
-    {% for category, msg in get_flashed_messages(with_categories=true) %}
-        <p class="flash-{{ category }}">{{ msg }}</p>
-    {% endfor %}
-    Welcome to Vimes, if you'd like jump in and start creating lists try
-    our public lists. If you need to be a little more organized create an
-    account and start your own collection lists.
+{% extends 'edit.html' %}
+{% block title %} Vimes: Welcome! {% endblock %}
+{% block head %}
+<style type='text/css'>
+	form.openid ul { text-align:center; list-style-type:none; display:inline;}
+	form.openid ul li {float:left; padding:4px; margin:0}
+	form.openid ul li span {padding:0 3px 0 3px}
+	form.openid fieldset {clear:both; padding:1em 0}
+	form.openid div+fieldset {display:none}
+	form.openid label {display:block; font-weight:normal; font-size:20px;margin-bottom:.5em}
+	input[name=openid_username] {width:8em}
+	input[name=openid_identifier] {width:18em}
+	form.openid ul li.highlight { -moz-border-radius:4px; -webkit-border-radius:4px; background-color: #FD6}
+	form.openid fieldset div {font-family:arial;-moz-border-radius:4px; -webkit-border-radius:4px; 
+		background: #DCDCDC url({{ url_for('static', filename='images/fadegrey.png') }}); padding:10px;display:inline-block}
+	form.openid input[type='submit'] {margin-left:1em;}
+
+	.openid_logo{color:#F7931E;padding:6px 0px 8px 28px; background: url({{ url_for('static', filename='images/openidico.png') }}) no-repeat}
+
+	#openid_login{float:left; font-size:larger; width:30%; margin:2em 1em; text-align:center}
+	#openid_login div{margin-top:0.5em}
+	#openid_login div+span{font-size:smaller}
+</style>
+{% endblock %}
+{% block list  %}
+<div class="grid_4">
+    <ul class="column column-1">
+        <li class="list">
+            <h1>Welcome to Vimes</h1>
+            <ul>
+                <li>Vimes is a simple to do list creator. It was created
+                out of a desire to have a very simple way to create and
+                manage lists. Many other list managers simply offered too
+                much complexity and sophistication than I needed for my
+                purposes. So this was created to have something simple and
+                elegant.
+                </li>
+                <li>All the lists on this page are editable to feel free to 
+                test out all the features or sign up and start creating your
+                lists.
+                </li>
+                <li>Vimes uses jQuery, Python, and Flask to work its magic.</li>
+            </ul>
+        </li>
+    </ul>
 </div>
+<div class="grid_4">
+    <ul class="column column-2">
+        <li class="list">
+            <h1>How to use</h1>
+            <ol>
+                <li>Click on any item or header to edit</li>
+                <li>When editing press enter to create a new item</li>
+                <li>Use the up and down arrows to navigate the list</li>
+                <li>Click an item bullet to cross out an item</li>
+                <li>Double click an item to delete</li>
+                <li>Click and drag an item bullet to reorder</li>
+                <li>Click and drag a list header to rearrange lists</li>
+                <li>Delete all text to remove an item (Press Ctrl+A and then Delete)</li>
+            </ol>
+        </li>
+    </ul>
+</div>
+<div class="grid_4">
+    <h1>Log In</h1>
+    <ul>
+		<li style="list-style:none;margin-left:0">
+			<form class="openid" method="post" action="{{ url_for('login') }}"> 
+				<input type="hidden" name="next" value="{{ next }}" />
+				<div>
+					<ul class="providers"> 
+						<li class="openid" title="OpenID">
+							<img src="{{ url_for('static', filename='images/openidW.png') }}" alt="icon" /> 
+							<span><strong>http://{your-openid-url}</strong></span>
+						</li> 
+						<li class="direct" title="Google"> 
+							<img src="{{ url_for('static', filename='images/googleW.png') }}" alt="icon" />
+							<span>https://www.google.com/accounts/o8/id</span>
+						</li> 
+						<li class="direct" title="Yahoo"> 
+							<img src="{{ url_for('static', filename='images/yahooW.png') }}" alt="icon" />
+							<span>http://yahoo.com/</span>
+						</li> 
+						<li class="username" title="AOL screen name"> 
+							<img src="{{ url_for('static', filename='images/aolW.png') }}" alt="icon" />
+							<span>http://openid.aol.com/<strong>username</strong></span>
+						</li> 
+						<li class="username" title="MyOpenID user name"> 
+							<img src="{{ url_for('static', filename='images/myopenid.png') }}" alt="icon" />
+							<span>http://<strong>username</strong>.myopenid.com/</span>
+						</li> 
+						<li class="username" title="Flickr user name"> 
+							<img src="{{ url_for('static', filename='images/flickr.png') }}" alt="icon" />
+							<span>http://flickr.com/<strong>username</strong>/</span>
+						</li> 
+						<li class="username" title="Technorati user name"> 
+							<img src="{{ url_for('static', filename='images/technorati.png') }}" alt="icon" />
+							<span>http://technorati.com/people/technorati/<strong>username</strong>/</span>
+						</li> 
+						<li class="username" title="Wordpress blog name"> 
+							<img src="{{ url_for('static', filename='images/wordpress.png') }}" alt="icon" />
+							<span>http://<strong>username</strong>.wordpress.com</span>
+						</li> 
+						<li class="username" title="Blogger blog name"> 
+							<img src="{{ url_for('static', filename='images/blogger.png') }}" alt="icon" />
+							<span>http://<strong>username</strong>.blogspot.com/</span>
+						</li> 
+						<li class="username" title="LiveJournal blog name"> 
+							<img src="{{ url_for('static', filename='images/livejournal.png') }}" alt="icon" />
+							<span>http://<strong>username</strong>.livejournal.com</span>
+						</li> 
+						<li class="username" title="ClaimID user name"> 
+							<img src="{{ url_for('static', filename='images/claimid.png') }}" alt="icon" />
+							<span>http://claimid.com/<strong>username</strong></span>
+						</li> 
+						<li class="username" title="Vidoop user name"> 
+							<img src="{{ url_for('static', filename='images/vidoop.png') }}" alt="icon" />
+							<span>http://<strong>username</strong>.myvidoop.com/</span>
+						</li> 
+						<li class="username" title="Verisign user name"> 
+							<img src="{{ url_for('static', filename='images/verisign.png') }}" alt="icon" />
+							<span>http://<strong>username</strong>.pip.verisignlabs.com/</span>
+						</li> 
+					</ul>
+				</div> 
+				<fieldset> 
+				<label>Enter your <span>Provider user name</span></label> 
+					<div>
+						<span></span>
+						<input type="text" name="openid_username" />
+						<span></span>
+					</div> 
+				</fieldset> 
+				<fieldset> 
+					<label>Enter your <a class="openid_logo" href="http://openid.net">OpenID</a></label> 
+					<div>
+						<input type="text" name="openid" />
+					</div> 
+				</fieldset> 
+				<input type="submit" value="Login" /> 
+			</form>
+		</li>
+    </ul>
+</div>
+{% endblock %}
+{% block scripts %}
+<div id="toolbar">
+    <ul>
+        <li id="color-button"><a href="#">Colors</a>
+            <ul id="color-selector">
+                <li class="color-swatch red-background"></li>
+                <li class="color-swatch seagreen-background"></li>
+                <li class="color-swatch green2-background"></li>
+                <li class="color-swatch midnight-background"></li>
+                <li class="color-swatch purple-background"></li>
+
+                <li class="color-swatch orange-background"></li>
+                <li class="color-swatch pine-background"></li>
+                <li class="color-swatch seafoam-background"></li>
+                <li class="color-swatch blue-background"></li>
+                <li class="color-swatch royal-background"></li>
+
+                <li class="color-swatch yellow-background"></li>
+                <li class="color-swatch green-background"></li>
+                <li class="color-swatch turquoise-background"></li>
+                <li class="color-swatch lightblue-background"></li>
+                <li class="color-swatch plum-background"></li>
+                <li class="color-input"><input type='text' /><a id="set-color" class="button blue small">Set</a></li>
+            </ul>
+        
+        </li>
+        <li id="delete-button"><a href="#">Remove</a></li>
+    </ul>
+</div>
+<script type='text/javascript' src='{{ url_for('static', filename='jsmin.js') }}'></script>
+<script type='text/javascript' src='{{ url_for('static', filename='vimes.js') }}'></script>
+<script type='text/javascript' src='{{ url_for('static', filename='external/jquery.openid.js') }}'></script>
+<script type="text/javascript">  $(function() { $("form.openid:eq(0)").openid(); });</script>
 {% endblock %}

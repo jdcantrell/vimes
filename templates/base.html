@@ -7,11 +7,20 @@
 		<link rel='stylesheet' href="{{ url_for('static', filename='text.css') }}" type='text/css' media='screen' />
 		<link rel='stylesheet' href="{{ url_for('static', filename='960.css') }}" type='text/css' media='screen' />
 		<link rel='stylesheet' href="{{ url_for('static', filename='styles.css') }}" type='text/css' media='screen' />
+		{% block head %}{% endblock %}
 	</head>
 	<body>
 		<div class="header">
 			<div class="menu">
+                
 				Vimes
+                {% if g.user %}
+                <ul class="menu-links">
+                    <li>Welcome {{ g.user.fullname }}</li>
+                    <li><a href="/profile">Profile</a> |</li>
+                    <li><a href="/logout">Log out</a></li>
+                </ul>
+                {% endif %}
 			</div>
 			<div class="status">
 			</div>
