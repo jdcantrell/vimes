@@ -64,7 +64,7 @@ def create_or_login(response):
         return redirect(OID.get_next_url())
     return redirect(url_for('create_profile', next=OID.get_next_url(), name=response.fullname or response.nickname, email=response.email))
 
-@VIMES.route('/profile', methods=['GET', 'POST'])
+@VIMES.route('/create', methods=['GET', 'POST'])
 def create_profile():
     if g.user is not None or 'openid' not in session:
         return redirect(url_for('start'))
@@ -79,6 +79,27 @@ def create_profile():
         else:
             flash(u'Profile successfully created')
             g.db.add(User(username, name, session['openid']))
+            g.db.commit()
+            return redirect(OID.get_next_url())
+    return render_template('profile.html', next_url=OID.get_next_url())
+
+@VIMES.route('/profile', methods=['GET', 'POST'])
+def profile():
+    if g.user is None:
+        return redirect(url_for('start'))
+    if request.method == 'POST':
+        name = request.form['name']
+        email = request.form['email']
+        username = request.form['username']
+        if not name:
+            flash(u'Error: You must provide a username')
+        elif '@' not in email:
+            flash(u'Error: You have to enter a valid email address')
+        elif not username:
+            flash(u'Error: You must provide a username')
+        else:
+            flash(u'Profile successfully created')
+            g.db.add(User(username, name, email, session['openid']))
             g.db.commit()
             return redirect(OID.get_next_url())
     return render_template('profile.html', next_url=OID.get_next_url())
