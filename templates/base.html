@@ -11,17 +11,14 @@
 	</head>
 	<body>
 		<div class="header">
-			<div class="menu">
-                
-				Vimes
-                {% if g.user %}
-                <ul class="menu-links">
-                    <li>Welcome {{ g.user.fullname }}</li>
-                    <li><a href="/profile">Profile</a> |</li>
-                    <li><a href="/logout">Log out</a></li>
-                </ul>
-                {% endif %}
-			</div>
+            <a class="menu" href="/">Vimes</a>
+            {% if g.user %}
+            <ul class="menu-links">
+                <li>Welcome {{ g.user.fullname }}</li>
+                <li><a href="/profile">Profile</a></li>
+                <li><a href="/logout">Log out</a></li>
+            </ul>
+            {% endif %}
 			<div class="status">
 			</div>
 		</div>
