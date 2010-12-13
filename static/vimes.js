@@ -43,7 +43,6 @@ autoSave = {
         else {
             $('#status-message').text('Everything is all good!');
         }
-
     }
 };
 
@@ -157,7 +156,7 @@ function save() {
     $.ajax({
         type: 'POST',
         data: {data: serialize()},
-        url: '/save/public/' + list,
+        url: '/' + list + '/save',
         success: autoSave.saveComplete,
         error: saveFail
     });
