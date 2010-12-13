@@ -41,6 +41,8 @@ def after_request(response):
 @VIMES.route("/")
 def start():
     """Display friendly start page"""
+    if g.user is not None:
+    	return redirect('/%s' % g.user.name)
     return render_template('start.html')
 
 @VIMES.route("/login", methods=['GET', 'POST'])
@@ -81,7 +83,7 @@ def create_profile():
             g.db.add(User(username, name, session['openid']))
             g.db.commit()
             return redirect(OID.get_next_url())
-    return render_template('profile.html', next_url=OID.get_next_url())
+    return render_template('create_profile.html', next_url=OID.get_next_url())
 
 @VIMES.route('/profile', methods=['GET', 'POST'])
 def profile():
@@ -136,6 +138,36 @@ def save_list(list_name):
     g.db.commit()
     return "Success"
 
+@VIMES.route("/<username>/save", methods=['POST', 'GET'])
+def save_user_list(username):
+    list_name = "list"
+    """Create or update public lists"""
+    if g.user.name != username:
+        return "Failure forbidden"
+    try:
+        page = g.db.query(ListPage).filter_by(user_id=g.user.id, url_slug=list_name).one()
+        page.data = request.form['data']
+    except orm.exc.NoResultFound:
+        page = ListPage(g.user.id, 0, list_name, request.form['data'])
+        g.db.add(page)
+        
+    g.db.commit()
+    return "Success"
+
+@VIMES.route("/<user_name>")
+def user_list(user_name):
+    """View/Create public list"""
+    list_name = "list"
+    if g.user is None or g.user.name != user_name:
+        return redirect(url_for('start'))
+    try:
+        page = g.db.query(ListPage).filter_by(url_slug=list_name, user_id=g.user.id).one()
+        data = json.loads(page.data)
+        return render_template('list.html', columns=data, \
+                column_list=['column-1', 'column-2', 'column-3'])
+    except orm.exc.NoResultFound:
+        pass
+    return render_template('new_list.html')
 
 if __name__ == "__main__":
     VIMES.run(host='0.0.0.0')
