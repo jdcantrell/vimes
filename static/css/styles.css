@@ -17,10 +17,14 @@ body {
 	z-index:10000
 }
 .editing li {}
-.list {
+li.list {
 	margin-left:0;
 	list-style:none
 }
+.list ul {list-style:disc; margin-left:24px}
+.list ol {list-style:decimal;margin-left:24px}
+.list li div {display:inline;left-5px}
+
 .column {
 	min-height:100px;
 }
@@ -32,8 +36,8 @@ body {
 }
 
 .handle {
-	position:absolute;
-	left:5px;
+	position:relative;
+	left:-25px;
 	cursor:pointer;
 }
 

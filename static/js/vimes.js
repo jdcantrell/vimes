@@ -141,7 +141,8 @@ function displayToolbar(item) {
           var item = this;
      }
      var pos = $(item).offset();
-     $('#toolbar').css('top', pos.top + 0);
+     $('#toolbar').css('top', pos.top + 35);
+     $('#toolbar').css('left', pos.left + 0);
      if (showHover) $('#toolbar').css('display', 'block');
      $(item).append($('#toolbar'));
      $('#color-button').removeClass('active');
@@ -239,7 +240,7 @@ var showHover = true;
 $(document).ready(function() {
      $('.column').append('<li class="add-button"><a href="#" class="button blue">Create list!</a></li>');
      $('.add-button a').click(createList);
-     $('.grid_4').hover(
+     $('.fourcol').hover(
           function() {if (showHover) $(this).addClass('hover')},
           function() {$(this).removeClass('hover')}
      );
@@ -253,7 +254,7 @@ $(document).ready(function() {
           sort: resizeColumns,
           start: function(event, ui) {
                ui.placeholder.height($(ui.item).height());
-               ui.placeholder.parents('.grid_4').removeClass('hover');
+               ui.placeholder.parents('.fourcol').removeClass('hover');
                showHover = false;
                $('#toolbar').css('display', 'none');
           },
@@ -261,7 +262,7 @@ $(document).ready(function() {
               autoSave.dirty();
                var add = ui.item.parent('.column').children('.add-button');
                add.appendTo(ui.item.parent('.column'));
-               ui.item.parents('.grid_4').addClass('hover');
+               ui.item.parents('.fourcol').addClass('hover');
                showHover = true;
                displayToolbar(ui.item);
                $('#toolbar').css('display', 'block');

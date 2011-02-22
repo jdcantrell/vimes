@@ -4,7 +4,7 @@
 
 {% for column_idx in column_list %}
 {% set column = columns[column_idx] %}
-<div class="grid_4">
+<div class="fourcol {% if loop.last %}last{% endif %}">
     <ul class="column column-{{loop.index}}">
         {% for list_idx in column %}
         {% set list = column[list_idx] %}

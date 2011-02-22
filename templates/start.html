@@ -23,7 +23,7 @@
 </style>
 {% endblock %}
 {% block list  %}
-<div class="grid_4">
+<div class="fourcol">
     <ul class="column column-1">
         <li class="list">
             <h1>Welcome to Vimes</h1>
@@ -44,7 +44,7 @@
         </li>
     </ul>
 </div>
-<div class="grid_4">
+<div class="fourcol">
     <ul class="column column-2">
         <li class="list">
             <h1>How to use</h1>
@@ -61,7 +61,7 @@
         </li>
     </ul>
 </div>
-<div class="grid_4">
+<div class="fourcol last">
     <h1>Log In</h1>
     <ul>
 		<li style="list-style:none;margin-left:0">
@@ -172,8 +172,8 @@
         <li id="delete-button"><a href="#">Remove</a></li>
     </ul>
 </div>
-<script type='text/javascript' src='{{ url_for('static', filename='jsmin.js') }}'></script>
-<script type='text/javascript' src='{{ url_for('static', filename='vimes.js') }}'></script>
+<script type='text/javascript' src='{{ url_for('static', filename='js/jsmin.js') }}'></script>
+<script type='text/javascript' src='{{ url_for('static', filename='js/vimes.js') }}'></script>
 <script type='text/javascript' src='{{ url_for('static', filename='external/jquery.openid.js') }}'></script>
 <script type="text/javascript">  $(function() { $("form.openid:eq(0)").openid(); });</script>
 {% endblock %}
