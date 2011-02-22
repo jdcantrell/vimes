@@ -36,8 +36,8 @@ li.list {
 }
 
 .handle {
-	position:relative;
-	left:-25px;
+	position:absolute;
+	margin-left:-25px;
 	cursor:pointer;
 }
 
