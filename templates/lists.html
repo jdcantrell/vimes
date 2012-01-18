@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+{% block title %} Here are some of your lists! {% endblock %}
+{% block body %}
+<div class="fourcol">
+  &nbsp;
+</div>
+<div class="fourcol">
+    <ul class="list-index">
+      {% for list in lists %}
+      <li class=""><a href="{{list.url_slug}}">{{list.header}}</a>
+      {% endfor %}
+      <li class="new-list"><a>Create a new List</a>
+    </ul>
+</div>
+<div class="fourcol last">
+  &nbsp;
+</div>
+{% endblock %}

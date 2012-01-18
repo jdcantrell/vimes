@@ -1,36 +1,17 @@
 {% extends 'edit.html' %}
-{% block title %} Vimes {% endblock %}
+{% block title %}New List{% endblock %}
 {% block list  %}
-<div class="grid_4">
-    <ul class="column column-1">
-        <li class="list">
-            <h1>Your new list</h1>
-            <ul>
-                <li>Click here to edit this item!</li>
-                <li>Press enter to create new items</li>
-            <ul>
-        </li>
-    </ul>
-</div>
-<div class="grid_4">
-    <ul class="column column-2">
-        <li class="list">
-            <h1>How to use</h1>
-            <ol>
-                <li>Click on any item or header to edit</li>
-                <li>When editing press enter to create a new item</li>
-                <li>Use the up and down arrows to navigate the list</li>
-                <li>Click an item bullet to cross out an item</li>
-                <li>Double click an item bullet to delete</li>
-                <li>Click and drag an item bullet to reorder</li>
-                <li>Click and drag a list header to rearrange lists</li>
-                <li>Delete all text to remove an item (Press Ctrl+A and then Delete)</li>
-            </ol>
-        </li>
-    </ul>
-</div>
-<div class="grid_4">
-    <ul class="column column-3">
-    </ul>
+<div class="list">
+  <h1>Your new list</h1>
+  <ol>
+    <li>Click on any item or header to edit</li>
+    <li>When editing press enter to create a new item</li>
+    <li>Use the up and down arrows to navigate the list</li>
+    <li>Click an item bullet to cross out an item</li>
+    <li>Double click an item bullet to delete</li>
+    <li>Click and drag an item bullet to reorder</li>
+    <li>Click and drag a list header to rearrange lists</li>
+    <li>Delete all text to remove an item (Press Ctrl+A and then Delete)</li>
+  </ol>
 </div>
 {% endblock %}
