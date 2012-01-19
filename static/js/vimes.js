@@ -203,7 +203,7 @@ var ListEditor = function(list) {
 $(document).ready(function() {
   ListEditor($('.list'))
 
-  $('body').click(function(event) {
+  $('html').click(function(event) {
     if (event.target == this) {
       var css = parseInt($(this).attr('class').match(/bg([0-9]*)/)[1])
       $(this).addClass('bg' + ((css < 13 ? css : 0) + 1))
