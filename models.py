@@ -1,53 +1,58 @@
 """Defines the database models used within in Vimes"""
-from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy import Column, Integer, String, Text, DateTime, orm, ForeignKey
-Base = declarative_base()
+from flaskext.sqlalchemy import SQLAlchemy
+db = SQLAlchemy()
 
-def get_metadata():
-    """Returns sqlalchemy's metadata object for the models"""
-    return Base.metadata
+class User(db.Model):
+  __tablename__ = 'users'
+  id = db.Column(db.Integer, primary_key=True)
+  name = db.Column(db.String(255))
+  fullname = db.Column(db.String(255))
+  password = db.Column(db.String(255))
 
-class User(Base):
-    __tablename__ = 'users'
-    id = Column(Integer, primary_key=True)
-    name = Column(String(255))
-    fullname = Column(String(255))
-    password = Column(String(255))
-    openid = Column(String(255))
-    email = Column(String(255))
+  def __init__(self, name, fullname, password):
+    self.name = name
+    self.fullname = fullname
+    self.password = password
 
-    def __init__(self, name, fullname, email, openid):
-        self.name = name
-        self.fullname = fullname
-        self.email = email
-        self.openid = openid
+  def __repr__(self):
+    return "<User('%s', '%s', '%s')>" % (self.name, self.fullname)
 
-    def __repr__(self):
-        return "<User('%s', '%s', '%s')>" % (self.name, self.fullname, self.email, self.openid)
+  def is_authenticated(self):
+    return True
 
-class ListPage(Base):
-    __tablename__ = 'list_pages'
-    id = Column(Integer, primary_key=True)
-    user_id = Column(Integer, ForeignKey('users.id'))
-    public = Column(Integer)
-    url_slug = Column(String(255))
-    data = Column(Text)
-    modify_date = Column(DateTime)
-    modify_user_id = Column(Integer)
-    create_date = Column(DateTime)
-    create_user_id = Column(Integer)
+  def is_active(self):
+    return True
 
-    user = orm.relationship(User, backref=orm.backref('list_pages', order_by=url_slug))
+  def is_anonymous(self):
+    return False
 
-    def __init__(self, user_id, public, url_slug, data):
-        self.user_id = user_id
-        self.public = public
-        self.url_slug = url_slug
-        self.data = data
-        self.create_user_id = user_id
+  def get_id(self):
+    return self.id
 
-    def __repr__(self):
-        return "<ListPage('%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', \
-                '%s'>" % (self.id, self.user_id, self.public, self.url_slug, \
-                self.data, self.modify_date, self.modify_user_id, \
-                self.create_date, self.create_user_id)
+class ListPage(db.Model):
+  __tablename__ = 'list_pages'
+  id = db.Column(db.Integer, primary_key=True)
+  public = db.Column(db.Integer)
+  url_slug = db.Column(db.String(255))
+  data = db.Column(db.Text)
+  modify_date = db.Column(db.DateTime)
+  modify_user_id = db.Column(db.Integer)
+  create_date = db.Column(db.DateTime)
+  create_user_id = db.Column(db.Integer)
+
+  user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
+  user = db.relationship('User', backref=db.backref('list_pages', order_by=url_slug, lazy='dynamic'))
+
+  def __init__(self, user_id, public, url_slug, data):
+    self.user_id = user_id
+    self.public = public
+    self.url_slug = url_slug
+    self.data = data
+    self.create_user_id = user_id
+
+  def __repr__(self):
+    return "<ListPage('%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', \
+      '%s'>" % (self.id, self.user_id, self.public, self.url_slug, \
+      self.data, self.modify_date, self.modify_user_id, \
+      self.create_date, self.create_user_id)
+

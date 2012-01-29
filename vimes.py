@@ -5,15 +5,14 @@ from contextlib import closing
 
 from flask import Flask, render_template, g, request, session, flash, redirect, url_for, get_flashed_messages
 from flaskext.login import LoginManager,  current_user, login_user, logout_user
-from flaskext.sqlalchemy import SQLAlchemy
 from flaskext.wtf import Form, PasswordField, TextField, validators
-
+from models import db, User, ListPage
 
 VIMES = Flask(__name__)
 VIMES.config.from_object(__name__)
 VIMES.config.from_envvar('VIMES_SETTINGS')
 
-db = SQLAlchemy(VIMES)
+db.init_app(VIMES)
 login_manager = LoginManager()
 login_manager.setup_app(VIMES)
 
@@ -27,60 +26,6 @@ else:
   multi_user_path = '/<username>'
 
 #Models
-class User(db.Model):
-  __tablename__ = 'users'
-  id = db.Column(db.Integer, primary_key=True)
-  name = db.Column(db.String(255))
-  fullname = db.Column(db.String(255))
-  password = db.Column(db.String(255))
-
-  def __init__(self, name, fullname, password):
-    self.name = name
-    self.fullname = fullname
-    self.password = password
-
-  def __repr__(self):
-    return "<User('%s', '%s', '%s')>" % (self.name, self.fullname)
-
-  def is_authenticated(self):
-    return True
-
-  def is_active(self):
-    return True
-
-  def is_anonymous(self):
-    return False
-
-  def get_id(self):
-    return self.id
-
-class ListPage(db.Model):
-  __tablename__ = 'list_pages'
-  id = db.Column(db.Integer, primary_key=True)
-  public = db.Column(db.Integer)
-  url_slug = db.Column(db.String(255))
-  data = db.Column(db.Text)
-  modify_date = db.Column(db.DateTime)
-  modify_user_id = db.Column(db.Integer)
-  create_date = db.Column(db.DateTime)
-  create_user_id = db.Column(db.Integer)
-
-  user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
-  user = db.relationship('User', backref=db.backref('list_pages', order_by=url_slug, lazy='dynamic'))
-
-  def __init__(self, user_id, public, url_slug, data):
-    self.user_id = user_id
-    self.public = public
-    self.url_slug = url_slug
-    self.data = data
-    self.create_user_id = user_id
-
-  def __repr__(self):
-    return "<ListPage('%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', \
-      '%s'>" % (self.id, self.user_id, self.public, self.url_slug, \
-      self.data, self.modify_date, self.modify_user_id, \
-      self.create_date, self.create_user_id)
-
 #Forms
 class LoginForm(Form):
   username = TextField('Username', [validators.Required()])
