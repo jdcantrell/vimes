@@ -4,140 +4,169 @@ import json
 from contextlib import closing
 
 from flask import Flask, render_template, g, request, session, flash, redirect, url_for, get_flashed_messages
-from sqlalchemy import create_engine, orm
-from flaskext.openid import OpenID
+from flaskext.login import LoginManager,  current_user, login_user, logout_user
+from flaskext.sqlalchemy import SQLAlchemy
+from flaskext.wtf import Form, PasswordField, TextField, validators
 
-from models import User, ListPage, get_metadata
 
 VIMES = Flask(__name__)
 VIMES.config.from_object(__name__)
 VIMES.config.from_envvar('VIMES_SETTINGS')
-OID = OpenID(VIMES)
+
+db = SQLAlchemy(VIMES)
+login_manager = LoginManager()
+login_manager.setup_app(VIMES)
+
+@login_manager.user_loader
+def load_user(userid):
+  return User.query.filter_by(id=userid).first()
 
 if VIMES.config['SINGLE_USER']:
   multi_user_path = ''
 else:
   multi_user_path = '/<username>'
 
-@VIMES.before_request
-def before_request():
-  """Add the database to our global request object"""
+#Models
+class User(db.Model):
+  __tablename__ = 'users'
+  id = db.Column(db.Integer, primary_key=True)
+  name = db.Column(db.String(255))
+  fullname = db.Column(db.String(255))
+  password = db.Column(db.String(255))
 
-  #TODO: move db engine string to be outside of this function
+  def __init__(self, name, fullname, password):
+    self.name = name
+    self.fullname = fullname
+    self.password = password
 
-  #Check our db config, and see what parts we need to add
-  if VIMES.config['DB_PASSWORD']:
-    db_user = '%s:%s' % (VIMES.config['DB_USER'], VIMES.config['DB_PASSWORD'])
-  else:
-    db_user = VIMES.config['DB_USER']
+  def __repr__(self):
+    return "<User('%s', '%s', '%s')>" % (self.name, self.fullname)
 
-  if VIMES.config['DB_HOST'] != '':
-    if VIMES.config['DB_PORT'] != '':
-      db_host = '@%s:%s' % (VIMES.config['DB_HOST'], VIMES.config['DB_PORT'])
-    db_host ='@%s' % VIMES.config['DB_HOST']
+  def is_authenticated(self):
+    return True
 
-  g.db_engine = create_engine('%s%s://%s%s/%s' % \
-    (VIMES.config['DB_TYPE'], VIMES.config['DB_DRIVER'], \
-    db_user, db_host, VIMES.config['DB_DATABASE']))
-  get_metadata().create_all(g.db_engine)
+  def is_active(self):
+    return True
 
-  g.db_session = orm.sessionmaker(bind=g.db_engine)
-  g.db = g.db_session()
-  g.user = None
-  if 'openid' in session:
-    g.user = g.db.query(User).filter_by(openid=session['openid']).first()
+  def is_anonymous(self):
+    return False
 
+  def get_id(self):
+    return self.id
 
-@VIMES.after_request
-def after_request(response):
-  """Close database connection when the request is complete"""
-  return response
+class ListPage(db.Model):
+  __tablename__ = 'list_pages'
+  id = db.Column(db.Integer, primary_key=True)
+  public = db.Column(db.Integer)
+  url_slug = db.Column(db.String(255))
+  data = db.Column(db.Text)
+  modify_date = db.Column(db.DateTime)
+  modify_user_id = db.Column(db.Integer)
+  create_date = db.Column(db.DateTime)
+  create_user_id = db.Column(db.Integer)
+
+  user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
+  user = db.relationship('User', backref=db.backref('list_pages', order_by=url_slug, lazy='dynamic'))
+
+  def __init__(self, user_id, public, url_slug, data):
+    self.user_id = user_id
+    self.public = public
+    self.url_slug = url_slug
+    self.data = data
+    self.create_user_id = user_id
+
+  def __repr__(self):
+    return "<ListPage('%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', \
+      '%s'>" % (self.id, self.user_id, self.public, self.url_slug, \
+      self.data, self.modify_date, self.modify_user_id, \
+      self.create_date, self.create_user_id)
+
+#Forms
+class LoginForm(Form):
+  username = TextField('Username', [validators.Required()])
+  password = PasswordField('Password', [validators.Required()])
+
+class ProfileForm(Form):
+  name = TextField('Username', [validators.Required()])
+  fullname = TextField('Full Name')
+  password = PasswordField('Password', [validators.Required()])
 
 @VIMES.route("/")
 def start():
   """Display friendly start page"""
-  if g.user is not None:
+  if not current_user.is_anonymous():
     if VIMES.config['SINGLE_USER']:
-      return display_index(g.user.name)
+      return display_index(current_user)
     else:
-      return redirect('/%s' % g.user.name)
+      return redirect('/%s' % current_user)
   return render_template('start.html')
 
 #The following set of functions handle user login/creation stuff
 #TODO: maybe move this to a module, or research to other existing modules
-@VIMES.route("/login", methods=['GET', 'POST'])
-@OID.loginhandler
+@VIMES.route("/login/", methods=["GET", "POST"])
 def login():
-  if g.user is not None:
-    return redirect(OID.get_next_url())
-  if request.method == 'POST':
-    openid = request.form.get('openid')
-    if openid:
-      return OID.try_login(openid, ask_for=['email', 'fullname', 'nickname'])
-  return render_template('login.html', next=OID.get_next_url(), error=OID.fetch_error())
-
-@OID.after_login
-def create_or_login(response):
-  session['openid'] = response.identity_url
-  user = g.db.query(User).filter_by(openid=response.identity_url).first()
-  if user is not None:
-    flash(u'Successfully logged in!')
-    g.user = user
-    return redirect(OID.get_next_url())
-#TODO: protect SINGLE_USER mode
-  return redirect(url_for('create_profile', next=OID.get_next_url(), name=response.fullname or response.nickname, email=response.email))
-
-@VIMES.route('/create', methods=['GET', 'POST'])
-def create_profile():
-  #TODO: protect SINGLE_USER mode
-  if g.user is not None or 'openid' not in session:
-    return redirect(url_for('start'))
-  if request.method == 'POST':
-    name = request.form['name']
-    email = request.form['email']
-    username = request.form['username']
-    if not name:
-      flash(u'Error: You must provide a username')
-    elif '@' not in email:
-      flash(u'Error: You have to enter a valid email address')
+  form = LoginForm()
+  if form.validate_on_submit():
+    # login and validate the user...
+    user = User.query.filter_by(name=request.form['username'], password=request.form['password']).first()
+    if user is not None:
+      login_user(user)
+      flash("Logged in successfully.")
+      return redirect(url_for("start"))
     else:
-      flash(u'Profile successfully created')
-      g.db.add(User(username, name, email, session['openid']))
-      g.db.commit()
-      return redirect(OID.get_next_url())
-  return render_template('create_profile.html', next_url=OID.get_next_url())
+      return redirect(url_for("create_profile"))
+  return render_template("login.html", form=form)
 
-@VIMES.route('/profile', methods=['GET', 'POST'])
-def profile():
-  if g.user is None:
-    return redirect(url_for('start'))
-  if request.method == 'POST':
-    name = request.form['name']
-    email = request.form['email']
-    username = request.form['username']
-    if not name:
-      flash(u'Error: You must provide a username')
-    elif '@' not in email:
-      flash(u'Error: You have to enter a valid email address')
-    elif not username:
-      flash(u'Error: You must provide a username')
-    else:
-      flash(u'Profile successfully created')
-      g.db.add(User(username, name, email, session['openid']))
-      g.db.commit()
-      return redirect(OID.get_next_url())
-  return render_template('profile.html', next_url=OID.get_next_url())
-
-@VIMES.route('/logout')
+@VIMES.route("/logout/")
 def logout():
-  session.pop('openid', None)
-  flash(u'You have been signed out, thank you and come again!')
-  return redirect(OID.get_next_url())
+  logout_user()
+  return redirect(url_for('start'))
 
 #Applications views are below
+@VIMES.route('/profile/new/', methods=['GET', 'POST'])
+def create_profile():
+  if current_user.is_authenticated():
+    return redirect(url_for('profile'))
+
+  form = ProfileForm()
+  if form.validate_on_submit():
+    existing_user = User.query.filter_by(name=request.form['name']).first()
+    if existing_user:
+      pass
+    else:
+      name = request.form['name']
+      fullname = request.form['fullname']
+      password = request.form['password']
+      user = User(name, fullname, password)
+      db.session.add(user)
+      db.session.commit()
+      return redirect(url_for('start'))
+  return render_template('profile.html', form=form)
+
+@VIMES.route('/profile/edit/', methods=['GET', 'POST'])
+def profile():
+  if current_user.is_anonymous():
+    return redirect(url_for('create_profile'))
+
+  form = ProfileForm(obj=current_user)
+  if form.validate_on_submit():
+    existing_user = User.query.filter_by(name=request.form['name']).first()
+    if existing_user:
+      if existing_user.id != current_user.id:
+        #TODO: warn about name conflict
+        pass
+      else:
+        existing_user.name = request.form['name']
+        existing_user.fullname = request.form['fullname']
+        existing_user.password = request.form['password']
+        db.session.add(existing_user)
+        db.session.commit()
+  return render_template('profile.html', form=form)
 
 
-@VIMES.route('%s/<listname>/save' % multi_user_path, methods=['POST'])
+
+
+@VIMES.route('/save/%s/<listname>/' % multi_user_path, methods=['POST'])
 def save_list(listname, username = None):
   """Create or update public lists"""
   if not is_current_user(username):
@@ -154,33 +183,30 @@ def save_list(listname, username = None):
   g.db.commit()
   return "Success"
 
-@VIMES.route('%s/<listname>' % multi_user_path)
+@VIMES.route('%s/<listname>/' % multi_user_path)
 def user_list(listname, username = None):
   if not is_current_user(username):
 #Show static version of list instead of redirect to start
-    return redirect(url_for('start'))
+    return "oops list"
 
   """View/Create public list"""
-  try:
-    page = g.db.query(ListPage).filter_by(url_slug=listname, user_id=g.user.id).one()
-    data = json.loads(page.data)
+  l = ListPage.query.filter_by(url_slug=listname).first()
+  if l:
+    data = json.loads(l.data)
     return render_template('list.html', columns=data, column_list=['column-1', 'column-2', 'column-3'])
-  except orm.exc.NoResultFound:
-    return render_template('new_list.html')
+
   return render_template('new_list.html')
 
 def is_current_user(username):
   if VIMES.config['SINGLE_USER']:
-    return (username is None and g.user is not None)
+    return (username is None and current_user.is_authenticated)
   else:
-    return (g.user is not None and g.user.name == username)
+    return (current_user.is_authenticated and current_user.name == username)
 
 def display_index(username):
-  try:
-    lists = g.db.query(ListPage).filter_by(user_id=g.user.id).all()
+  lists = ListPage.query.filter_by(user_id=current_user.id).all()
+  if lists:
     return render_template('lists.html', lists=lists)
-  except orm.exc.NoResultFound:
-    pass
   return render_template('lists.html', lists=lists)
 
 
