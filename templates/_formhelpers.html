@@ -1,0 +1,7 @@
+{% macro render_field(field) %}
+<li>{{field.label}} 
+  <span class="errors">
+    {% for error in field.errors %}{{ error }}{% if not loop.last %}, {% endif %}{% endfor %}
+  </span>
+<li>{{ field(**kwargs)|safe }}
+{% endmacro %}

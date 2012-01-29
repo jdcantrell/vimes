@@ -1,20 +1,16 @@
+{% from "_formhelpers.html" import render_field %}
 {% extends "base.html" %}
 {% block title %}Vimes: Update your profile{% endblock %}
-{% block body %}
-<div class="grid_12 intro">
-    <h2>Update Profile</h2>
-    <form action="" method="post">
-        {% if error %}<p class="error"><b>Oops:</b> {{ error }}</p>{% endif %}
-        <dl>
-            <dt>Nickname(only letters, numbers, and underscores. No spaces!):
-            <dd><input type="text" name="username" size="30" value="{{ g.user.name }}">
-            <dt>Name:
-            <dd><input type="text" name="name" size="30" value="{{ g.user.fullname }}">
-            <dt>Email:
-            <dd><input type="text" name="email" size="30" value="{{ g.user.email }}">
-        <input type="submit" class="button blue" value="Update Profile">
-        <input type="hidden" name="next" value="/profile">
-        </p>
-    </form>
+{% block body  %}
+<div class="list">
+  <h1>Update Profile</h1>
+  <form action="/profile/new/" method="post">
+  {{form.hidden_tag()}}
+    <ul class="form">
+      {{ render_field(form.name) }}
+      {{ render_field(form.fullname) }}
+      {{ render_field(form.password) }}
+      <li><input type="submit" class="button blue" value="Update Profile">
+    </ul>
 </div>
 {% endblock %}
