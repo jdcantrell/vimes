@@ -1,8 +1,9 @@
 {% extends 'base.html' %}
 {% block title %} Vimes: Welcome! {% endblock %}
-{% block body  %}
-<div class="list">
-  <h1>Welcome to Vimes</h1>
+{% block heading  %}
+  Welcome to Vimes
+{% endblock %}
+{% block content  %}
   <ul class="form">
     <li>Vimes is a simple list creator. It has humble goals, and so it
     lives in a world where one list per page is perfect enough. Lists
@@ -11,5 +12,4 @@
     <li>Vimes uses jQuery, Python, and Flask to work its magic.
     <li><a href="/login/">Login to get started</a>
   </ul>
-</div>
 {% endblock %}

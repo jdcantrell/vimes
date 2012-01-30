@@ -25,7 +25,6 @@ if VIMES.config['SINGLE_USER']:
 else:
   multi_user_path = '/<username>'
 
-#Models
 #Forms
 class LoginForm(Form):
   username = TextField('Username', [validators.Required()])
@@ -54,12 +53,12 @@ def login():
   if form.validate_on_submit():
     # login and validate the user...
     user = User.query.filter_by(name=request.form['username'], password=request.form['password']).first()
-    if user is not None:
+    if user:
       login_user(user)
       flash("Logged in successfully.")
       return redirect(url_for("start"))
     else:
-      return redirect(url_for("create_profile"))
+      form.username.errors.append('Unable to login, want to sign up?')
   return render_template("login.html", form=form)
 
 @VIMES.route("/logout/")
@@ -70,6 +69,10 @@ def logout():
 #Applications views are below
 @VIMES.route('/profile/new/', methods=['GET', 'POST'])
 def create_profile():
+  if VIMES.config['SINGLE_USER']:
+    if db.session.query(db.func.count(User.id)) != 0:
+      return redirect(url_for('login'))
+
   if current_user.is_authenticated():
     return redirect(url_for('profile'))
 
@@ -86,10 +89,11 @@ def create_profile():
       db.session.add(user)
       db.session.commit()
       return redirect(url_for('start'))
-  return render_template('profile.html', form=form)
+  return render_template('profile.html', form=form, action="/profile/new/")
 
 @VIMES.route('/profile/edit/', methods=['GET', 'POST'])
 def profile():
+  print current_user
   if current_user.is_anonymous():
     return redirect(url_for('create_profile'))
 
@@ -98,18 +102,19 @@ def profile():
     existing_user = User.query.filter_by(name=request.form['name']).first()
     if existing_user:
       if existing_user.id != current_user.id:
-        #TODO: warn about name conflict
-        pass
+        form.name.errors.append("Username already exists")
       else:
         existing_user.name = request.form['name']
         existing_user.fullname = request.form['fullname']
-        existing_user.password = request.form['password']
+
+        if len(request.form['password']):
+          existing_user.password = request.form['password']
+
+        print "updated user"
+        flash("Your profile has been updated.")
         db.session.add(existing_user)
         db.session.commit()
-  return render_template('profile.html', form=form)
-
-
-
+  return render_template('profile.html', form=form, action="/profile/edit/")
 
 @VIMES.route('/save/%s/<listname>/' % multi_user_path, methods=['POST'])
 def save_list(listname, username = None):
@@ -118,14 +123,15 @@ def save_list(listname, username = None):
     #TODO: return a proper error here
     return "You have failed"
 
-  try:
-    page = g.db.query(ListPage).filter_by(user_id=g.user.id, url_slug=listname).one()
+  page = ListPage.query.filter_by(user_id=current_user.id, url_slug=listname).one()
+  if page:
     page.data = request.form['data']
-  except orm.exc.NoResultFound:
-    page = ListPage(g.user.id, 0, listname, request.form['data'])
-    g.db.add(page)
+  else:
+    page = ListPage(current_user.id, 0, listname, request.form['data'])
+
+  db.session.add(page)
+  db.session.commit()
     
-  g.db.commit()
   return "Success"
 
 @VIMES.route('%s/<listname>/' % multi_user_path)
@@ -137,10 +143,9 @@ def user_list(listname, username = None):
   """View/Create public list"""
   l = ListPage.query.filter_by(url_slug=listname).first()
   if l:
-    data = json.loads(l.data)
-    return render_template('list.html', columns=data, column_list=['column-1', 'column-2', 'column-3'])
+    return render_template('list.html', list_data=json.loads(l.data))
 
-  return render_template('new_list.html')
+  return render_template('list.html')
 
 def is_current_user(username):
   if VIMES.config['SINGLE_USER']:

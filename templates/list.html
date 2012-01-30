@@ -1,22 +1,36 @@
 {% extends 'edit.html' %}
-{% block title %} A List Page! {% endblock %}
-{% block list %}
+{% block title %}
+  {% if list %}
+    {{list.header}}
+  {% else %}
+    Your new list
+  {% endif %}
+{% endblock %}
 
-{% for column_idx in column_list %}
-{% set column = columns[column_idx] %}
-<div class="fourcol {% if loop.last %}last{% endif %}">
-    <ul class="column column-{{loop.index}}">
-        {% for list_idx in column %}
-        {% set list = column[list_idx] %}
-        <li class="list {% if list.cls %}{{list.cls}}{% endif %}">
-            <h1>{{list.header}}</h1>
-            <{{list.type}}>
-                {% for item in list['items'] %}<li>{{item}}</li>
-                {% endfor %}
-            </{{list.type}}>
-        </li>
+{% block heading %}
+  {% if list %}
+    {{list.header}}
+  {% else %}
+    Your new list
+  {% endif %}
+{% endblock %}
+
+{% block content  %}
+  {% if list %}
+    <{{list.type}}>
+        {% for item in list['items'] %}<li>{{item}}</li>
         {% endfor %}
-    </ul>
-</div>
-{% endfor %}
+    </{{list.type}}>
+  {% else %}
+    <ol>
+      <li>Click on any item or header to edit</li>
+      <li>When editing press enter to create a new item</li>
+      <li>Use the up and down arrows to navigate the list</li>
+      <li>Click an item bullet to cross out an item</li>
+      <li>Double click an item bullet to delete</li>
+      <li>Click and drag an item bullet to reorder</li>
+      <li>Click and drag a list header to rearrange lists</li>
+      <li>Delete all text to remove an item (Press Ctrl+A and then Delete)</li>
+    </ol>
+  {% endif %}
 {% endblock %}

@@ -1,18 +1,25 @@
 {% extends 'base.html' %}
 {% block title %} Here are some of your lists! {% endblock %}
-{% block body %}
-<div class="fourcol">
-  &nbsp;
-</div>
-<div class="fourcol">
-    <ul class="list-index">
-      {% for list in lists %}
-      <li class=""><a href="{{list.url_slug}}">{{list.header}}</a>
-      {% endfor %}
-      <li class="new-list"><a>Create a new List</a>
-    </ul>
-</div>
-<div class="fourcol last">
-  &nbsp;
-</div>
+{% block heading %}Your compendium of lists{% endblock %}
+{% block content %}
+  <ul class="list-index form">
+    {% for list in lists %}
+    <li class=""><a href="{{list.url_slug}}">{{list.header}}</a>
+    {% endfor %}
+    <li class="new-list">
+    <input type="text" placeholder="List URL slug" id="url_slug">
+    <button type="button" class="btn primary">Create</button>
+  </ul>
+{% endblock %}
+{% block scripts %}
+  <script>
+    $(document).ready(function () {
+      $('button').click(function () {
+        var slug = $('#url_slug').val();
+        if (slug.length) {
+          location.href += slug + '/';
+        }
+      })
+    });
+  </script>
 {% endblock %}

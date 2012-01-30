@@ -1,16 +1,25 @@
 {% from "_formhelpers.html" import render_field %}
 {% extends "base.html" %}
-{% block title %}Vimes: Update your profile{% endblock %}
-{% block body  %}
-<div class="list">
-  <h1>Update Profile</h1>
-  <form action="/profile/new/" method="post">
+{% block title %}
+  Vimes: 
+  {% if action == "/profile/edit/" %}Update{% else %}Create{% endif %}
+  your profile
+{% endblock %}
+
+{% block heading %}
+  {% if action == "/profile/edit/" %}Update{% else %}Create{% endif %}
+  Profile
+{% endblock %}
+
+
+{% block content  %}
+  <form action="{{ action }}" method="post">
   {{form.hidden_tag()}}
     <ul class="form">
       {{ render_field(form.name) }}
       {{ render_field(form.fullname) }}
       {{ render_field(form.password) }}
-      <li><input type="submit" class="button blue" value="Update Profile">
+      <li style="text-align:center"><button type="submit" class="btn primary">Update Profile</button>
     </ul>
-</div>
+  </form>
 {% endblock %}
