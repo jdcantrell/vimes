@@ -15,7 +15,7 @@ class User(db.Model):
     self.password = password
 
   def __repr__(self):
-    return "<User('%s', '%s', '%s')>" % (self.name, self.fullname)
+    return "<User('%s', '%s')>" % (self.name, self.fullname)
 
   def is_authenticated(self):
     return True
